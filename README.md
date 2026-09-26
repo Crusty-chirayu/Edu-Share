@@ -30,10 +30,13 @@ present.
 | Area | Status |
 | --- | --- |
 | Repository & documentation | ✅ Initialized |
-| Technical audit of inherited system | ✅ Documented ([`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md)) |
-| Product requirements | ⬜ Not started |
-| Architecture approval | ⬜ Not started |
-| Application implementation | ⬜ Not started |
+| Technical audit of the inherited system | ✅ Complete — [`docs/PROJECT-AUDIT.md`](./docs/PROJECT-AUDIT.md) |
+| Product requirements | ✅ Complete — [`docs/PRODUCT-REQUIREMENTS.md`](./docs/PRODUCT-REQUIREMENTS.md) |
+| Architecture proposal | ✅ Complete — [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) |
+| UI/UX design system | ✅ Complete — [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) |
+| Implementation roadmap | ✅ Complete — [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) |
+| Architecture approval | ⏸ **Awaiting owner decision (M2)** |
+| Application implementation | ⬜ Not started (blocked on M2) |
 | Tests / CI | ⬜ Not started |
 | Deployment | ⬜ Not started |
 
@@ -52,12 +55,20 @@ original machine only, unmodified.
 
 ## Technology stack
 
-**Not yet decided.** No framework, ORM, or hosting target has been selected. A
-stack proposal is expected as part of the technical audit and architecture
-milestone, and will be recorded in `docs/ARCHITECTURE-PROPOSAL.md` once approved.
+**Proposed, not adopted.** No framework, ORM, database driver, or hosting target has
+been installed or committed. The recommendation is recorded in
+[`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) and is **awaiting
+owner approval**:
 
-For reference, the *inherited* system used PHP 8, MySQL/MariaDB, Tailwind CSS
-(via CDN), and Font Awesome. Those are facts about the inherited code, not a
+> An integrated full-stack TypeScript application (Next.js, App Router) on PostgreSQL,
+> with private S3-compatible object storage, behind a single authorisation module.
+
+The proposal also states its own conditions, the trade-offs it accepts, and the
+circumstances that would justify revisiting the decision. Nothing is installed until
+that document is approved.
+
+For reference, the *inherited* system used PHP 8, MySQL/MariaDB, Tailwind CSS (via the
+CDN play script), and Font Awesome. Those are facts about the inherited code, not a
 decision about this project.
 
 ---
@@ -65,7 +76,8 @@ decision about this project.
 ## Local setup
 
 Not yet applicable — the repository currently contains documentation only. Setup
-instructions will be added when the application scaffold is created.
+instructions will be added in milestone `M3`, when the application scaffold is created,
+and they will be tested from a clean clone before being published.
 
 ---
 
@@ -73,13 +85,19 @@ instructions will be added when the application scaffold is created.
 
 | Document | Purpose |
 | --- | --- |
-| [`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md) | Verified findings on the inherited system, licensing, and security review |
-| [`docs/CONTINUATION-CHECKPOINT.md`](./docs/CONTINUATION-CHECKPOINT.md) | Where to pick up in the next session |
-| [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) | Running log of milestones |
+| [`docs/PROJECT-AUDIT.md`](./docs/PROJECT-AUDIT.md) | Severity-ranked audit of the inherited application: 24 findings, data model, security, accessibility, risk register, and the licensing boundary |
+| [`docs/PRODUCT-REQUIREMENTS.md`](./docs/PRODUCT-REQUIREMENTS.md) | Personas, roles and permissions, 76 functional and 46 non-functional requirements, MVP scope, the definition of "premium", content policy, and the owner decisions |
+| [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) | Three candidate architectures, a recommendation with its trade-offs, the full specification, the conceptual database design, and the decision record |
+| [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) | Brand identity, design tokens, 40 components, 15 screen specifications, interaction standards, and the accessibility baseline |
+| [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) | Milestones `M0`–`M11`, quality gates, CI/CD design, release and rollback procedure, verified cost figures, and the risk register |
+| [`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md) | The original handover: verified findings on the inherited system, its licensing position, and its security review |
+| [`docs/CONTINUATION-CHECKPOINT.md`](./docs/CONTINUATION-CHECKPOINT.md) | Where to pick up in the next session, including the safety boundaries |
+| [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) | Running log of milestones and their verification |
 
-Additional documents (`PRODUCT-REQUIREMENTS.md`, `ARCHITECTURE-PROPOSAL.md`,
-`PROJECT-AUDIT.md`, `UI-UX-DESIGN-SYSTEM.md`, `IMPLEMENTATION-ROADMAP.md`) will be
-created as those phases are actually performed — not as empty placeholders.
+**Read these in order:** the audit establishes what is broken, the requirements establish
+what is needed, the architecture establishes how it will be built, the design system
+establishes how it will look, and the roadmap establishes in what order — with an explicit
+approval gate between the planning and the building.
 
 ---
 

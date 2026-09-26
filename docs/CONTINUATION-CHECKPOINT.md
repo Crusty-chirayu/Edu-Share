@@ -43,52 +43,80 @@ no license was found in it.
 
 ## State as of this checkpoint
 
-**Done**
-- Full technical read of the inherited application (all 24 files + SQL dump).
-- Verified handover document written: `docs/PROJECT-HANDOVER.md`.
-- New independent repository created, connected to `Crusty-chirayu/Edu-Share`,
-  branched from the existing remote `main` (no force-push, history preserved).
-- `.gitignore` written to exclude secrets, dumps, uploads, and inherited code.
-- `README.md` rewritten to describe the new project's actual (pre-implementation) state.
-- This checkpoint and `docs/DEVELOPMENT-STATUS.md` created.
+**M0 — COMPLETE.** Independent repository established and the inherited application
+handed over and documented.
 
-**Not started (intentionally)**
-- Product requirements, architecture proposal, design system, roadmap.
-- Any application code, dependencies, CI, or deployment.
+**M1 — COMPLETE.** Five planning documents produced, cross-checked and verified:
+
+| Document | Content |
+| --- | --- |
+| `docs/PROJECT-AUDIT.md` | 24 severity-ranked findings (2 critical, 6 high, 9 medium, 5 low, 2 informational), each labelled VERIFIED / REPORTED / INFERRED / UNKNOWN; architecture and data-model analysis; full security, accessibility, performance, observability and testability review; positive patterns worth keeping; risk register; licensing boundary; audit limitations |
+| `docs/PRODUCT-REQUIREMENTS.md` | Vision, 5 personas, 3-role least-privilege model with a capability matrix, MVP boundary, 76 functional + 46 non-functional requirements, a 13-point definition of "premium", a content-policy framework, 12 owner decisions |
+| `docs/ARCHITECTURE-PROPOSAL.md` | 3 candidate architectures compared across 16 criteria, one recommendation with trade-offs and revisit triggers, full specification, conceptual database design, 5 architecture decision records, all provider facts cited with their check date |
+| `docs/UI-UX-DESIGN-SYSTEM.md` | Brand identity, design tokens for light and dark, typography, motion, 40 components, 15 screen specifications, interaction standards, WCAG 2.2 AA baseline |
+| `docs/IMPLEMENTATION-ROADMAP.md` | Milestones `M0`–`M11` with objective/scope/deliverables/acceptance/tests/risks/evidence each; 13 quality gates; CI/CD design; release checklist and rollback; verified free-tier cost figures; 15-item risk register; 12 stage gates |
+
+**M2 — AWAITING OWNER.** Not started by definition.
+
+**M3 and later — NOT STARTED.** Nothing has been installed, scaffolded or deployed.
+
+### The three findings that matter most
+
+1. **AUD-001 (critical)** — `teacher_profile.php` serves files before any authentication
+   check and builds the path from unsanitised input: an **unauthenticated arbitrary file
+   read**. The replacement has no route where a request parameter can reach a storage or
+   filesystem path.
+2. **AUD-002 (critical)** — registration lets the user pick the role that authorises
+   destructive platform-wide actions. In the replacement, **a role is never accepted from
+   client input**.
+3. **AUD-023 (legal)** — the inherited source has no licence, so it **cannot be reused**.
+   The platform is written from scratch regardless of the technical findings.
+
+### Corrections to the previous session's findings
+
+Recorded so the audit is not misread:
+
+- `admin.php` is **not** SQL-injectable. Its identifiers are `intval()`-cast and the type
+  is compared against literals. It *is* still invalid PHP and still contains the
+  privilege-escalation flaw.
+- Prepared statements are used **broadly** — 42 call sites, including all dynamic filter
+  construction — not merely "in certain read paths".
 
 ---
 
-## Next task: Milestone 1 — Technical Audit & Architecture Proposal
+## Next task: Milestone 2 — obtain owner approval
 
-Documentation only. Do **not** scaffold an application yet.
+**M1 is finished. The next action is not code.** It is to get answers to the decisions in
+`docs/PRODUCT-REQUIREMENTS.md` §11. A copy-pasteable checklist is in §11.3.
 
-1. **`docs/PRODUCT-REQUIREMENTS.md`** — real student workflows; personas
-   (student, teacher, moderator); must / should / won't-have; the
-   University -> Department -> Course -> Subject -> Semester taxonomy, and how
-   cross-institution discovery should actually behave; what "premium" means in
-   concrete, testable terms.
-2. **`docs/ARCHITECTURE-PROPOSAL.md`** — 2–3 viable stacks (for example
-   TypeScript end-to-end vs. Next.js frontend + separate API), with trade-offs,
-   cost, hosting assumptions, search approach, and file-storage approach.
-   **Recommend one and justify it.** Do not start installing it.
-3. **`docs/UI-UX-DESIGN-SYSTEM.md`** — design tokens, type scale, colour system,
-   component inventory, motion principles, accessibility baseline.
-4. **`docs/IMPLEMENTATION-ROADMAP.md`** — phased plan with dependencies.
-5. **`docs/PROJECT-AUDIT.md`** — consolidate and prioritise the inherited
-   system's defects and risks from the handover into a severity-ranked list.
+**Blocking decisions** (nothing downstream may start without these):
 
-**Then stop and ask for owner approval before writing any application code.**
+| ID | Question |
+| --- | --- |
+| `D-001` | Which architecture — Option A (integrated TypeScript), B (decoupled API) or C (BaaS-led)? |
+| `D-002` | Which managed database, and is a paid tier ever acceptable? |
+| `D-005` | Where does it run, given that the main free hosting plan is documented as **non-commercial and personal use only**? |
 
----
+**Non-blocking but recorded:** `D-003` AI scope, `D-004` content policy, `D-006` moderator
+deletion power, `D-007` malware handling, `D-008` resource retention after account
+closure, `D-009` personal data collected, `D-010` log retention, `D-011` contributor
+licence grant, `D-012` takedown response window.
 
-## Open questions for the owner
+> **Until the owner approves the architecture: do not scaffold an application, do not
+> install dependencies, do not create migrations, and do not write application code.**
+> After approval, the next milestone is `M3` — project foundation and development
+> environment — as specified in `docs/IMPLEMENTATION-ROADMAP.md` §7.
 
-1. **Deployment target** — is there a preference (Vercel, Railway, Render,
-   self-hosted)? Affects storage and database choices.
-2. **Budget** — are managed services (hosted Postgres, S3, Algolia, an LLM API)
-   acceptable, or must this run on free tiers / self-hosted?
-3. **Scope of "AI-assisted" features** — are they in scope for v1, or later?
-4. **Content policy** — open uploads by any signed-up user, or moderated?
+### Inherited-project follow-ups for the owner (not code)
+
+1. Ask the original author to **rotate the credentials** whose hashes sit in the
+   inherited database dump, since those people's passwords are still in use.
+2. Ask whether the inherited application was ever deployed publicly, and to whom the
+   personal data in the dump belonged — this determines whether there is a disclosure
+   obligation.
+3. If reuse of the inherited code is ever wanted, obtain **written permission** first and
+   record it in a third-party notices file.
+
 
 ## Quick verification commands
 

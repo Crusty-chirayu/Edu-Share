@@ -49,14 +49,77 @@ Running log of EDU-SHARE milestones. Newest first.
 
 ---
 
-## M1 — Technical audit & architecture proposal
+## M1 — Technical audit, product definition, architecture, design system & roadmap
 
-**Status: NOT STARTED**
-**Type:** Documentation only. Owner approval required before any code.
+**Status: COMPLETE** (documentation only)
+**Date:** 2026-09-26
+**Type:** Documentation and planning. No application code written; no dependency installed.
 
-Planned deliverables: `PROJECT-AUDIT.md`, `PRODUCT-REQUIREMENTS.md`,
-`ARCHITECTURE-PROPOSAL.md`, `UI-UX-DESIGN-SYSTEM.md`, `IMPLEMENTATION-ROADMAP.md`.
+### Completed
 
-## M2+ — Implementation
+- **`docs/PROJECT-AUDIT.md`** — a 24-finding, severity-ranked audit of the inherited
+  application (2 critical, 6 high, 9 medium, 5 low, 2 informational), with every finding
+  labelled VERIFIED / REPORTED / INFERRED / UNKNOWN, plus the positive patterns worth
+  retaining and the licensing boundary.
+- **`docs/PRODUCT-REQUIREMENTS.md`** — 5 personas, a three-role least-privilege model with
+  a 27-row capability matrix, 76 functional requirements with acceptance criteria, 46
+  non-functional targets, an explicit MVP boundary, a 13-point definition of "premium", a
+  content-policy framework, and 12 owner decisions.
+- **`docs/ARCHITECTURE-PROPOSAL.md`** — three candidate architectures compared across 16
+  descriptive criteria, one recommendation with its trade-offs and revisit triggers, the
+  full specification including cross-cutting concerns, a conceptual database design, five
+  architecture decision records, and every provider fact with its source and check date.
+- **`docs/UI-UX-DESIGN-SYSTEM.md`** — brand identity and visual principles, semantic design
+  tokens for light and dark, typography, motion, 40 components with states and
+  accessibility notes, 15 screen specifications, interaction standards, and a WCAG 2.2 AA
+  baseline.
+- **`docs/IMPLEMENTATION-ROADMAP.md`** — milestones `M0`–`M11` each with objective, scope,
+  deliverables, acceptance criteria, tests, risks and completion evidence; 13 quality
+  gates; a CI/CD design; a release checklist and rollback plan; verified free-tier cost
+  figures; a 15-item risk register; and 12 stage gates.
 
-**Status: NOT STARTED.** Blocked on M1 approval.
+### Key findings that drive the plan
+
+- **AUD-001 (critical):** `teacher_profile.php` serves files **before any authentication
+  check** and builds a path from unsanitised input — an unauthenticated arbitrary file
+  read. This is why no route in the replacement lets a request parameter reach a storage
+  or filesystem path.
+- **AUD-002 (critical):** registration lets a user select the role that authorises
+  destructive platform-wide actions. This is why a role is never accepted from client
+  input in the replacement.
+- **AUD-010 (architectural):** `courses.name` is globally UNIQUE, forbidding the product's
+  own cross-institution premise. This is why every uniqueness constraint is scoped to its
+  parent in the proposed schema.
+- **AUD-023 (legal):** the inherited source carries no licence, so it cannot be reused.
+  The platform is written from scratch regardless of the technical findings.
+- **Corrections to the earlier handover:** `admin.php` is **not** SQL-injectable (its
+  identifiers are `intval()`-cast), and prepared statements are used broadly — 42 call
+  sites. Both corrections are recorded so the audit is not read as a list of
+  exaggerations.
+
+### Verification actually performed
+
+| Check | Result |
+| --- | --- |
+| All five documents exist with substantive content | ✅ |
+| Relative links resolve from their own directory | ✅ |
+| Markdown tables well-formed (header/separator consistency) | ✅ |
+| Secret, credential and personal-data pattern scan | ✅ no matches |
+| Application source, manifests or lockfiles introduced | ✅ none present |
+| Change set is documentation-only | ✅ confirmed against `git status` |
+
+### Carried into the next milestone
+
+**M2 — owner approval.** Twelve decisions are listed in
+[`PRODUCT-REQUIREMENTS.md`](./PRODUCT-REQUIREMENTS.md) §11, of which `D-001` (stack),
+`D-002` (database) and `D-005` (hosting) block implementation. A copy-pasteable checklist
+is provided in §11.3.
+
+## M2 — Owner review and architecture approval
+
+**Status: AWAITING OWNER.** No implementation work may begin until this gate passes.
+Silence is not approval: unanswered decisions keep their recorded provisional defaults.
+
+## M3+ — Implementation
+
+**Status: NOT STARTED.** Blocked on M2. Nothing in the roadmap below `M1` is complete.
