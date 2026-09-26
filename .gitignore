@@ -1,0 +1,127 @@
+# ============================================================
+# EDU-SHARE — .gitignore
+# Independently maintained repository (github.com/Crusty-chirayu/Edu-Share)
+# NOTE: No application framework has been selected/approved yet.
+# Sections below are grouped by justification, not by assumed stack.
+# ============================================================
+
+# ---------- Secrets & environment ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ed25519
+secrets.json
+credentials.json
+service-account*.json
+
+# ---------- Inherited reference material (NOT redistributed) ----------
+# The inherited PHP/MySQL application has no detectable license.
+# It is kept OUT of this repository until redistribution rights are
+# established in writing. See docs/PROJECT-HANDOVER.md (Licensing).
+original-reference/
+reference/
+inherited/
+*.orig.php
+# Inherited database dump — contains real personal data + password hashes.
+project.sql
+# Any local database dump / export
+*.dump
+*.sql.gz
+*.sql.bak
+db.sql
+data.sql
+backup.sql
+*.sqlite
+*.sqlite3
+*.db
+
+# ---------- User-uploaded academic documents (runtime storage only) ----------
+# These live on the server / object storage, never in Git.
+uploads/
+upload/
+storage/
+public/uploads/
+public/storage/
+private/uploads/
+*.pdf
+*.doc
+*.docx
+*.ppt
+*.pptx
+*.xls
+*.xlsx
+!docs/**/*.pdf
+
+# ---------- Dependencies (JS/TS — future frontend) ----------
+node_modules/
+vendor/
+bower_components/
+.pnp
+.pnp.js
+
+# ---------- Build output & framework caches ----------
+.next/
+out/
+dist/
+build/
+.nuxt/
+.svelte-kit/
+.astro/
+.turbo/
+.cache/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+*.map
+
+# ---------- Test / coverage artifacts ----------
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# ---------- Logs ----------
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- Runtime / OS / temp ----------
+tmp/
+temp/
+.cache/
+.DS_Store
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.tmp
+*.bak
+*.swp
+*~
+nohup.out
+
+# ---------- IDE / editor (local state only) ----------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+.idea/
+*.iml
+*.swp
+*.swo
+.clj-kondo/.cache/
+.kilo/
+# Local agent / worktree scratch directories (not part of the product)
+
+# ---------- Local container / infrastructure overrides ----------
+docker-compose.override.yml
+docker-compose.override.yaml
+.local/
