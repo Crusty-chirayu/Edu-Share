@@ -715,6 +715,10 @@ Provider and platform facts used in this proposal were verified from official
 documentation on **2026-09-26**. Prices, quotas and plan terms change; anything below
 must be re-checked before it is relied on in a budget or a design decision.
 
+> **A short route through these facts — and the decision each one supports — is in
+> [DECISION-BRIEF.md](./DECISION-BRIEF.md).** Every figure there was re-checked on the same
+> date, and the four facts added after this proposal was written are recorded in §11.1.
+
 | Fact used | Value as documented | Source | Checked |
 | --- | --- | --- | --- |
 | Object storage free tier | 10 GB-month storage, 1 M Class A and 10 M Class B operations per month, egress free | `developers.cloudflare.com/r2/pricing/` | 2026-09-26 |
@@ -725,6 +729,11 @@ must be re-checked before it is relied on in a budget or a design decision.
 | Supabase paid entry | From $25/month | same | 2026-09-26 |
 | Hosting free tier (Vercel Hobby) | 100 GB fast data transfer, 1 M function invocations, 4 CPU-hours active CPU, 360 GB-hours provisioned memory, 45-minute build limit | `vercel.com/docs/plans/hobby` | 2026-09-26 |
 | **Hosting plan restriction** | **"The Hobby plan restricts users to non-commercial, personal use only"** | `vercel.com/docs/plans/hobby`; `vercel.com/docs/limits/fair-use-guidelines` | 2026-09-26 |
+| Hosting paid entry (Vercel Pro) | $20/month including $20 of usage credit; spend management with a hard limit | `vercel.com/pricing` | 2026-09-26 |
+| Hosting free tier (Cloudflare Workers) | Free: 100,000 requests/day, **10 ms CPU per invocation**, 128 MB memory, 50 subrequests, 64 MiB worker size, 5 cron triggers, 100 Workers. Paid: $5/month minimum including 10 M requests and 30 M CPU-ms. **The free plan's CPU ceiling is below the 10–20 ms that the same documentation states for server-side rendering and authentication, so it is not a viable target for this architecture** | `developers.cloudflare.com/workers/platform/pricing/`; `developers.cloudflare.com/workers/platform/limits/` | 2026-09-26 |
+| Container hosting (Fly.io) | **No free tier**; every organisation requires a credit card on file; egress to India $0.12/GB | `fly.io/docs/about/pricing/` | 2026-09-26 |
+| CI allowance (GitHub Actions, private repository) | GitHub Free: 2,000 minutes and 500 MB storage per month; beyond that Linux 2-core is $0.006/minute. A budget can stop usage instead of billing it | `docs.github.com` billing reference, "Product usage included with each plan" | 2026-09-26 |
+| Candidate authentication library (Better Auth) | **MIT licence** — "The MIT License (MIT), Copyright (c) 2024 - present, Bereket Engida" | `github.com/better-auth/better-auth` (LICENSE.md) | 2026-09-26 |
 | Container hosting (Railway) | Free tier: 30-day trial with $5 credit, then $1/month; Hobby $5/month minimum usage with $5 of credits; object storage $0.015/GB-month with free egress | `railway.com/pricing` | 2026-09-26 |
 | Container hosting (Render) | Hobby workspace $0/month plus compute; free instances exist with documented limitations; cheapest paid instance $7/month | `render.com/pricing` | 2026-09-26 |
 | Transactional email free tier | 3,000 emails/month, 100/day, 3 domains, 30-day retention; Pro from $20/month | `resend.com/pricing` | 2026-09-26 |
@@ -735,10 +744,11 @@ must be re-checked before it is relied on in a budget or a design decision.
 
 | Item | Status |
 | --- | --- |
-| The exact free-plan daily request allowance and CPU-time limit for Cloudflare Workers | The limits page was retrieved, but the free-plan row was not captured in the retrieved text. **Re-check before any layer depends on Workers** |
-| The licence of any specific authentication or UI library | Not verified. If a library is adopted, its licence is confirmed and recorded at that point |
+| The exact free-plan daily request allowance and CPU-time limit for Cloudflare Workers | **RESOLVED 2026-09-26** — verified and added to the table above: 100,000 requests/day and 10 ms CPU per invocation. The CPU ceiling is the deciding fact: it sits below what server rendering needs, so the Workers free plan is not a target for this architecture |
+| The licence of any specific authentication or UI library | Partially resolved 2026-09-26: the candidate authentication library (Better Auth) is **MIT**. Any **other** library's licence is still confirmed and recorded at the point of adoption |
 | Whether the hosting provider's non-commercial restriction accommodates this exact project | A judgement for the owner (`D-005`). The restriction is quoted above; an interpretation is deliberately **not** asserted here |
 | Any price or quota not listed in the table above | Not verified, and not used anywhere in this proposal |
+| Vercel Pro and Cloudflare Workers Paid prices, GitHub Actions minutes, Fly.io's absence of a free tier | Verified 2026-09-26 and added to the table above. These facts arrived **after** this proposal was written; they refine the `D-005` costing in [DECISION-BRIEF.md](./DECISION-BRIEF.md) and change no recommendation here |
 
 ### 11.2 How to re-verify cheaply
 

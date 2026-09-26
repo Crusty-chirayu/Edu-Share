@@ -35,7 +35,8 @@ present.
 | Architecture proposal | ✅ Complete — [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) |
 | UI/UX design system | ✅ Complete — [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) |
 | Implementation roadmap | ✅ Complete — [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) |
-| Architecture approval | ⏸ **Awaiting owner decision (M2)** |
+| Owner decision brief (costs re-verified 2026-09-26) | ✅ Complete — [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) |
+| Architecture approval | ⏸ **Awaiting owner decision (M2)** — answer the block in the decision brief |
 | Application implementation | ⬜ Not started (blocked on M2) |
 | Tests / CI | ⬜ Not started |
 | Deployment | ⬜ Not started |
@@ -90,6 +91,7 @@ and they will be tested from a clean clone before being published.
 | [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) | Three candidate architectures, a recommendation with its trade-offs, the full specification, the conceptual database design, and the decision record |
 | [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) | Brand identity, design tokens, 40 components, 15 screen specifications, interaction standards, and the accessibility baseline |
 | [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) | Milestones `M0`–`M11`, quality gates, CI/CD design, release and rollback procedure, verified cost figures, and the risk register |
+| [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) | The short route through the approval gate: each decision's options, trade-offs and costs (every figure re-verified against provider documentation on 2026-09-26), recommended defaults, the questions only the owner can answer, and a copy-pasteable answer block |
 | [`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md) | The original handover: verified findings on the inherited system, its licensing position, and its security review |
 | [`docs/CONTINUATION-CHECKPOINT.md`](./docs/CONTINUATION-CHECKPOINT.md) | Where to pick up in the next session, including the safety boundaries |
 | [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) | Running log of milestones and their verification |
@@ -98,6 +100,10 @@ and they will be tested from a clean clone before being published.
 what is needed, the architecture establishes how it will be built, the design system
 establishes how it will look, and the roadmap establishes in what order — with an explicit
 approval gate between the planning and the building.
+
+**If you are only here to unblock the build**, read
+[`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) instead: it is the route through all
+five documents, and it ends in the answer block that `M3` is waiting on.
 
 ---
 

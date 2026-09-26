@@ -141,6 +141,11 @@ traceable to an audit finding or a requirement.
 | **Risks** | Silence. **Silence is not approval.** If a decision is not answered, the *provisional* assumption recorded in the requirements stands, and the milestone records that it is provisional |
 | **Completion evidence** | The owner's answers, recorded in `docs/CONTINUATION-CHECKPOINT.md`, with a date |
 
+> **A prepared decision brief is in [DECISION-BRIEF.md](./DECISION-BRIEF.md)**: the options,
+> the trade-offs, the costs re-verified on 2026-09-26, a recommended default for each of the
+> twelve decisions, and a copy-pasteable answer block. It exists so that `M2` costs the owner
+> one reading rather than five.
+
 ### 6.1 Proposed default answers if the owner does not respond
 
 These are the **[ASSUMPTION]** defaults this plan proceeds on. They are chosen to be
@@ -500,6 +505,7 @@ the honest position is that its guarantees are the ones written here and no othe
 | **Managed PostgreSQL** | The relational database | Neon: 100 compute-hours per project per month, **0.5 GB storage per project**, scale-to-zero after 5 minutes idle. Supabase: 500 MB database, 1 GB file storage, 5 GB egress, 50,000 monthly active users, **pauses after 1 week of inactivity** | Neon usage-based from $0.106/CU-hour; Supabase Pro from $25/month |
 | **Object storage** | Stores uploaded documents | Cloudflare R2: **10 GB-month storage**, 1 M Class A and 10 M Class B operations per month, **egress free** | $0.015/GB-month plus operation charges |
 | **Transactional email** | Verification, reset, moderation notices | Resend: 3,000 emails per month, 100 per day, 3 domains | $20/month |
+| **Continuous integration** | Type check, lint, tests, migrations, build | GitHub Actions on a **private** repository: 2,000 minutes and 500 MB of storage per month on GitHub Free; a budget can be set to **stop usage** rather than bill it beyond that | Linux 2-core at $0.006/minute beyond the allowance |
 
 ### 19.2 The constraint that bites first
 
@@ -528,6 +534,7 @@ what makes the free tier viable. Its consequences:
 | 6 | Inactivity pausing on a free tier | Medium | Relevant only if that provider is chosen; `D-002` records the choice |
 | 7 | AI inference | **Not applicable in v1** | AI is out of MVP scope (`ADR-005`); if introduced it gets its own cost ceiling |
 | 8 | External search service | Not applicable in v1 | No external search engine (`ADR-004`) |
+| 9 | Scheduled jobs on the chosen host | Medium | Railway's free plan includes cron jobs **during the trial only**, and scheduled invocations consume a hosting allowance on any free plan. Mitigation: the job is a **callable command triggered externally** — a scheduled GitHub Actions workflow (2,000 included minutes/month) or a Cloudflare Cron Trigger — rather than a platform feature assumed to exist |
 
 ### 19.4 A cost-conscious operating approach
 

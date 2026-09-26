@@ -117,8 +117,65 @@ is provided in §11.3.
 
 ## M2 — Owner review and architecture approval
 
-**Status: AWAITING OWNER.** No implementation work may begin until this gate passes.
-Silence is not approval: unanswered decisions keep their recorded provisional defaults.
+**Status: AWAITING OWNER — decision brief prepared.**
+**Date:** 2026-09-26
+**Type:** Research and documentation only. No application code written; no dependency
+installed; no account created, no service subscribed to, nothing deployed.
+
+### Completed this session
+
+- **Re-verified every provider fact the blocking decisions depend on**, from the providers'
+  own documentation, on 2026-09-26: Vercel (Hobby and Pro), Neon, Supabase, Cloudflare R2
+  and Workers, Railway, Render, Fly.io, Resend, GitHub Actions, and the licence of the
+  candidate authentication library.
+- **Wrote [`DECISION-BRIEF.md`](./DECISION-BRIEF.md)** — the document this gate needs:
+  each decision's real options, its trade-offs, its cost implications, a recommended
+  default, the questions only the owner can answer, a copy-pasteable answer block, and an
+  exact preview of what `M3` will do on approval.
+- **Closed two gaps the `M1` documents had explicitly flagged as unverified:**
+  - Cloudflare Workers free-plan limits — now verified as **100,000 requests/day and 10 ms
+    of CPU per invocation**. The CPU ceiling matters: it is below the 10–20 ms that
+    Cloudflare's own documentation attributes to server-side rendering and authentication,
+    so the Workers free plan is **not** a viable target for this architecture.
+  - The licence of the candidate authentication library — **Better Auth is MIT**.
+- **Recorded four facts that arrived after the proposal was written** (none changes a
+  recommendation): Vercel Pro is $20/month; Cloudflare Workers Paid is $5/month; a private
+  GitHub repository includes 2,000 Actions minutes per month, with a budget able to stop
+  usage rather than bill it; Fly.io has **no** free tier and requires a card on file.
+- **Recorded one operational constraint found during verification:** Railway's free plan
+  includes cron jobs **during the trial only**. Scheduled work (retention purge, orphan
+  reconciliation) will be designed as a callable command triggered by an external
+  scheduler, not as an assumed platform feature. Added to the roadmap's resource-constraint
+  register.
+- Corrected and extended the source tables in
+  [`ARCHITECTURE-PROPOSAL.md`](./ARCHITECTURE-PROPOSAL.md) §11 and
+  [`IMPLEMENTATION-ROADMAP.md`](./IMPLEMENTATION-ROADMAP.md) §19 so the two documents agree
+  with the verified figures.
+
+### Verification actually performed
+
+| Check | Result |
+| --- | --- |
+| Every figure in the brief traceable to a provider URL and a check date | ✅ §4 and §13 of the brief |
+| Figures differ from the `M1` documents | ✅ recorded explicitly as eight deltas, not silently corrected |
+| Change set is documentation-only | ✅ `git status` shows only `.md` files |
+| Secret, credential and personal-data pattern scan | ✅ no matches |
+| Application source, manifest or lockfile introduced | ✅ none present |
+| No resource created, subscribed to, or deployed | ✅ nothing outside the repository was touched |
+
+### Deliberately not done
+
+No scaffold, no dependency, no migration, no database, no storage bucket, no email account,
+no CI workflow, no deploy. `M3` remains blocked on `D-001`, `D-002` and `D-005`.
+
+### What is required to proceed
+
+**The answer block in [`DECISION-BRIEF.md`](./DECISION-BRIEF.md) §11.** The minimum set that
+unblocks `M3` is `D-001` (architecture), `D-002b` (whether a paid database tier is ever
+acceptable), `D-005a` (is the use personal and non-commercial), `D-005b` (is up to $5/month
+acceptable if the free terms forbid it), plus the four confirmations at the end of the
+block. Every other decision already carries a provisional default that can be changed at
+the milestone which uses it.
 
 ## M3+ — Implementation
 

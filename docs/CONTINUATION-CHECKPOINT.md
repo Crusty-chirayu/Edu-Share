@@ -56,7 +56,15 @@ handed over and documented.
 | `docs/UI-UX-DESIGN-SYSTEM.md` | Brand identity, design tokens for light and dark, typography, motion, 40 components, 15 screen specifications, interaction standards, WCAG 2.2 AA baseline |
 | `docs/IMPLEMENTATION-ROADMAP.md` | Milestones `M0`–`M11` with objective/scope/deliverables/acceptance/tests/risks/evidence each; 13 quality gates; CI/CD design; release checklist and rollback; verified free-tier cost figures; 15-item risk register; 12 stage gates |
 
-**M2 — AWAITING OWNER.** Not started by definition.
+**M2 — AWAITING OWNER.** Still open. What this session added is a **prepared decision
+brief**, [`DECISION-BRIEF.md`](./DECISION-BRIEF.md): every provider fact the blocking
+decisions depend on was re-verified from the providers' own documentation on 2026-09-26,
+and the brief carries the real options, the trade-offs, the verified costs, the recommended
+defaults, the questions only the owner can answer, a copy-pasteable answer block and an
+exact preview of `M3`.
+
+> **No approval was given in this session, so no code was written.** The brief exists
+> precisely so that the gate can be passed in one reading rather than five.
 
 **M3 and later — NOT STARTED.** Nothing has been installed, scaffolded or deployed.
 
@@ -86,8 +94,10 @@ Recorded so the audit is not misread:
 
 ## Next task: Milestone 2 — obtain owner approval
 
-**M1 is finished. The next action is not code.** It is to get answers to the decisions in
-`docs/PRODUCT-REQUIREMENTS.md` §11. A copy-pasteable checklist is in §11.3.
+**`M1` is finished and `M2` is prepared. The next action is still not code.** It is to answer
+the block in [`DECISION-BRIEF.md`](./DECISION-BRIEF.md) §11 — the same checklist as
+`docs/PRODUCT-REQUIREMENTS.md` §11.3, extended with the commercial questions that `D-005`
+turns on.
 
 **Blocking decisions** (nothing downstream may start without these):
 
@@ -101,6 +111,17 @@ Recorded so the audit is not misread:
 deletion power, `D-007` malware handling, `D-008` resource retention after account
 closure, `D-009` personal data collected, `D-010` log retention, `D-011` contributor
 licence grant, `D-012` takedown response window.
+
+### Constraints verified in the `M2` session (2026-09-26)
+
+| Fact | Consequence for the next session |
+| --- | --- |
+| **Cloudflare Workers free plan: 100,000 requests/day and 10 ms CPU per invocation** | Below the 10–20 ms that Cloudflare's own documentation attributes to server rendering, so it is **not** a target for this architecture. Do not propose it as a hosting answer |
+| **Railway free plan:** $1/month after the trial; 1 vCPU, 0.5 GB RAM, 1 replica; **cron jobs are trial-only** | A viable cheap container host, but scheduled work must be triggered by an external scheduler |
+| **Fly.io:** no free tier, credit card required, egress to India $0.12/GB | Eliminated as a free option |
+| **GitHub Actions** on a private repository: 2,000 minutes and 500 MB per month; a budget can **stop** usage | CI cost is bounded. Set the budget when the workflow is created, not after the first overage |
+| **Better Auth** authentication library: **MIT** | The candidate library's licence is resolved |
+| **Vercel Hobby:** *"non-commercial, personal use only"*, cannot purchase extra usage, and limits pause for up to 30 days | The reason `D-005` blocks, and why the interpretation is the owner's judgement rather than mine |
 
 > **Until the owner approves the architecture: do not scaffold an application, do not
 > install dependencies, do not create migrations, and do not write application code.**
