@@ -1,7 +1,7 @@
 # EDU-SHARE
 
-> **Status: pre-implementation / repository initialization.**
-> The platform is under active development. No application code has been written yet.
+> **Status: M3 foundation implemented — boots, validates env, health-checked.**
+> No product features exist yet (auth, catalogue, resources arrive M5–M7).
 
 EDU-SHARE is an independent, full-stack EdTech platform for academic resource
 discovery and sharing — connecting students and teachers across institutions to
@@ -36,12 +36,14 @@ present.
 | UI/UX design system | ✅ Complete — [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) |
 | Implementation roadmap | ✅ Complete — [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) |
 | Owner decision brief (costs re-verified 2026-09-26) | ✅ Complete — [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) |
-| Architecture approval | ⏸ **Awaiting owner decision (M2)** — answer the block in the decision brief |
-| Application implementation | ⬜ Not started (blocked on M2) |
-| Tests / CI | ⬜ Not started |
-| Deployment | ⬜ Not started |
+| M2 approval (Option A + Supabase PostgreSQL + Vercel) | ✅ Granted by owner — scope: M3 foundation only |
+| M3 foundation (Next.js App Router + strict TS + env validation + migrations + CI) | ✅ Implemented — see Local setup below |
+| Tests / CI | ✅ Wired — [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) |
+| Deployment | ⬜ Not started (M11) |
+| M4+ product modules (design system, auth, catalogue, resources, AI) | ⬜ Not started — out of scope for this task |
 
-**No feature described as "planned" in this repository exists yet.**
+**M3 foundation only — no product features yet.** Auth, catalogue, resources,
+AI, and all M4+ modules are out of scope for this task.
 
 ### Inherited code status
 
@@ -54,19 +56,14 @@ original machine only, unmodified.
 
 ---
 
-## Technology stack
+## Technology stack (M3 — adopted)
 
-**Proposed, not adopted.** No framework, ORM, database driver, or hosting target has
-been installed or committed. The recommendation is recorded in
-[`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) and is **awaiting
-owner approval**:
-
-> An integrated full-stack TypeScript application (Next.js, App Router) on PostgreSQL,
-> with private S3-compatible object storage, behind a single authorisation module.
-
-The proposal also states its own conditions, the trade-offs it accepts, and the
-circumstances that would justify revisiting the decision. Nothing is installed until
-that document is approved.
+Next.js 15.5.2 App Router + React 19.1.1 + strict TypeScript 5.9.2, Zod env
+validation, PostgreSQL 16 (local Docker; Supabase path in
+[`docs/SUPABASE.md`](./docs/SUPABASE.md)), Drizzle ORM + postgres.js,
+Vitest + Playwright, ESLint flat + Prettier, GitHub Actions CI.
+Exact versions are pinned in `package.json` with a committed lockfile.
+Full specification and trade-offs: [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md).
 
 For reference, the *inherited* system used PHP 8, MySQL/MariaDB, Tailwind CSS (via the
 CDN play script), and Font Awesome. Those are facts about the inherited code, not a
@@ -76,9 +73,21 @@ decision about this project.
 
 ## Local setup
 
-Not yet applicable — the repository currently contains documentation only. Setup
-instructions will be added in milestone `M3`, when the application scaffold is created,
-and they will be tested from a clean clone before being published.
+Prerequisites: Node 20–24, npm 11, Docker Desktop (local Postgres).
+
+```powershell
+Set-Location E:\projects\edu-share-platform
+Copy-Item .env.example .env
+npm ci
+docker compose up -d
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+App: `http://localhost:3000`. Health: `GET /api/health` (200 with DB, 503
+without). Checks: `npm run typecheck`, `npm run lint`, `npm test -- --run`,
+`npm run build`. Supabase workflow: [`docs/SUPABASE.md`](./docs/SUPABASE.md).
 
 ---
 
@@ -93,6 +102,7 @@ and they will be tested from a clean clone before being published.
 | [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) | Milestones `M0`–`M11`, quality gates, CI/CD design, release and rollback procedure, verified cost figures, and the risk register |
 | [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) | The short route through the approval gate: each decision's options, trade-offs and costs (every figure re-verified against provider documentation on 2026-09-26), recommended defaults, the questions only the owner can answer, and a copy-pasteable answer block |
 | [`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md) | The original handover: verified findings on the inherited system, its licensing position, and its security review |
+| [`docs/SUPABASE.md`](./docs/SUPABASE.md) | Supabase integration boundary and safe migration workflow (M3) |
 | [`docs/CONTINUATION-CHECKPOINT.md`](./docs/CONTINUATION-CHECKPOINT.md) | Where to pick up in the next session, including the safety boundaries |
 | [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) | Running log of milestones and their verification |
 

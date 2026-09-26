@@ -56,17 +56,19 @@ handed over and documented.
 | `docs/UI-UX-DESIGN-SYSTEM.md` | Brand identity, design tokens for light and dark, typography, motion, 40 components, 15 screen specifications, interaction standards, WCAG 2.2 AA baseline |
 | `docs/IMPLEMENTATION-ROADMAP.md` | Milestones `M0`–`M11` with objective/scope/deliverables/acceptance/tests/risks/evidence each; 13 quality gates; CI/CD design; release checklist and rollback; verified free-tier cost figures; 15-item risk register; 12 stage gates |
 
-**M2 — AWAITING OWNER.** Still open. What this session added is a **prepared decision
-brief**, [`DECISION-BRIEF.md`](./DECISION-BRIEF.md): every provider fact the blocking
-decisions depend on was re-verified from the providers' own documentation on 2026-09-26,
-and the brief carries the real options, the trade-offs, the verified costs, the recommended
-defaults, the questions only the owner can answer, a copy-pasteable answer block and an
-exact preview of `M3`.
+**M2 — APPROVED by owner (scope: M3 foundation only).** Option A: Next.js App
+Router + TypeScript + Supabase PostgreSQL + Vercel (free-tier limits apply).
+This task implements M3 only; M4/M5 product work is out of scope.
 
-> **No approval was given in this session, so no code was written.** The brief exists
-> precisely so that the gate can be passed in one reading rather than five.
-
-**M3 and later — NOT STARTED.** Nothing has been installed, scaffolded or deployed.
+**M3 — FOUNDATION IMPLEMENTED 2026-09-26.** Scaffold, strict TS, env validation,
+`.env.example`, Supabase boundary (`src/lib/supabase.ts` + `docs/SUPABASE.md`),
+reversible migration 0001, seed, health endpoint, logger, error boundary,
+middleware headers, Vitest + Playwright smoke, CI workflow, README setup docs.
+Verified: typecheck ✅, lint ✅, format ✅, unit tests ✅ (7 passed/1 skipped),
+build ✅, `/` 200 + `/api/health` 503-degraded without DB ✅.
+Blocked: live `db:migrate`/`db:seed` (Docker daemon down here — CI covers it),
+no Supabase project exists (documented only), Playwright not run locally.
+Details: [`DEVELOPMENT-STATUS.md`](./DEVELOPMENT-STATUS.md) §M3.
 
 ### The three findings that matter most
 
@@ -92,25 +94,14 @@ Recorded so the audit is not misread:
 
 ---
 
-## Next task: Milestone 2 — obtain owner approval
+## Next task: M3 completion gate → M4 (separate task)
 
-**`M1` is finished and `M2` is prepared. The next action is still not code.** It is to answer
-the block in [`DECISION-BRIEF.md`](./DECISION-BRIEF.md) §11 — the same checklist as
-`docs/PRODUCT-REQUIREMENTS.md` §11.3, extended with the commercial questions that `D-005`
-turns on.
-
-**Blocking decisions** (nothing downstream may start without these):
-
-| ID | Question |
-| --- | --- |
-| `D-001` | Which architecture — Option A (integrated TypeScript), B (decoupled API) or C (BaaS-led)? |
-| `D-002` | Which managed database, and is a paid tier ever acceptable? |
-| `D-005` | Where does it run, given that the main free hosting plan is documented as **non-commercial and personal use only**? |
-
-**Non-blocking but recorded:** `D-003` AI scope, `D-004` content policy, `D-006` moderator
-deletion power, `D-007` malware handling, `D-008` resource retention after account
-closure, `D-009` personal data collected, `D-010` log retention, `D-011` contributor
-licence grant, `D-012` takedown response window.
+**M3 code is implemented and locally verified per §M3-blockers.**
+Remaining for the gate: (1) start Docker Desktop and run
+`npm run db:migrate` → `:status` → `db:seed` → `db:migrate:down` → `:status` →
+`db:migrate` (G6 reversal proof); (2) push + watch CI green; (3) optionally
+`npx playwright install --with-deps chromium` then `npm run test:e2e`.
+Then M4 (tokens/primitives/shell/`/design`) per roadmap §8 — NOT in this task.
 
 ### Constraints verified in the `M2` session (2026-09-26)
 
@@ -123,10 +114,8 @@ licence grant, `D-012` takedown response window.
 | **Better Auth** authentication library: **MIT** | The candidate library's licence is resolved |
 | **Vercel Hobby:** *"non-commercial, personal use only"*, cannot purchase extra usage, and limits pause for up to 30 days | The reason `D-005` blocks, and why the interpretation is the owner's judgement rather than mine |
 
-> **Until the owner approves the architecture: do not scaffold an application, do not
-> install dependencies, do not create migrations, and do not write application code.**
-> After approval, the next milestone is `M3` — project foundation and development
-> environment — as specified in `docs/IMPLEMENTATION-ROADMAP.md` §7.
+> **M2 approved — M3 authorized. M4+ product work is NOT authorized in this task.**
+> After M3, the next milestone is `M4` — in a separate task.
 
 ### Inherited-project follow-ups for the owner (not code)
 

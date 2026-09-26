@@ -1,0 +1,9 @@
+.prettierrc.json
+eslint.config.mjs
+next-env.d.ts
+.next
+out
+coverage
+playwright-report
+test-results
+

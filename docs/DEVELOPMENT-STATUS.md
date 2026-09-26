@@ -177,6 +177,69 @@ acceptable if the free terms forbid it), plus the four confirmations at the end 
 block. Every other decision already carries a provisional default that can be changed at
 the milestone which uses it.
 
-## M3+ — Implementation
+## M3 — Project foundation and development environment
 
-**Status: NOT STARTED.** Blocked on M2. Nothing in the roadmap below `M1` is complete.
+**Status: IMPLEMENTED 2026-09-26 (verification below; live DB run blocked, see §M3-blockers).**
+**Type:** Implementation. No product features — scaffold, tooling, env, migrations, CI only.
+**Authorization:** owner approved M2 (Option A: Next.js App Router + TypeScript + Supabase
+PostgreSQL + Vercel, free-tier limits) with scope restricted to M3. M4/M5 NOT started.
+
+### Delivered
+
+- Next.js 15.5.2 App Router + React 19.1.1 + strict TS 5.9.2 (`src/app/`: `layout`, `page`,
+  `error` client boundary, `not-found`, `api/health`; `src/middleware.ts` security headers).
+- Env fail-fast validation (`src/lib/env.ts`, Zod) + `.env.example` placeholders-only;
+  `.env` git-ignored and verified ignored (`git check-ignore`).
+- DB layer: `postgres` + Drizzle schema (`src/db/`), reversible migration 0001
+  (`schema_migrations` journal + `health_probes`), `db:migrate` / `:down` / `:status`,
+  `db:seed` (one probe row, no product data), `compose.yaml` (Postgres 16-alpine).
+- Supabase boundary: lazy `@supabase/supabase-js` client (`src/lib/supabase.ts`),
+  optional env keys, workflow doc `docs/SUPABASE.md`. No project created, no keys invented.
+- Auth boundary only: middleware headers now; sessions/roles arrive in M5. No registration,
+  roles, courses, or AI code.
+- Quality: ESLint flat (Next core-web-vitals + strict TS), Prettier, Vitest unit/integration,
+  Playwright e2e smoke (`e2e/smoke.spec.ts`), CI (`.github/workflows/ci.yml`: install,
+  typecheck, lint, format, tests, migrate up/status/seed/down/status/up, build).
+- Docs: README local-setup + stack updated; `docs/SUPABASE.md` added.
+
+### Verification actually performed (this machine, 2026-09-26)
+
+| Check (exact command) | Result |
+| --- | --- |
+| `npx tsc --noEmit` | ✅ pass, exit 0 |
+| `npx eslint .` | ✅ pass, exit 0 (after fixing `no-html-link-for-pages`, `no-console`) |
+| `npx prettier --check <scoped paths>` | ✅ pass (docs excluded; pre-existing docs use other wrapping) |
+| `npx vitest run` | ✅ 3 files passed, 7 tests passed, 1 skipped (`db.integration` needs live DB) |
+| `npm run build` | ✅ pass (added `"use client"` to `error.tsx`; routes `/`, `/_not-found`, `/api/health`) |
+| `dev` on :3100 + `GET /api/health` | ✅ `/` 200; `/api/health` 503 `{"status":"degraded","db":"down"}` (correct: no DB here) |
+| `npm run db:migrate:status` | ⚠️ fails closed as designed: `connect ECONNREFUSED 127.0.0.1:5432` (no Postgres here) |
+| `docker compose up -d` | ❌ Docker Desktop daemon not running (`npipe/...dockerDesktopLinuxEngine` missing) |
+| `npx playwright test` | ⏭️ not run locally (no DB + browsers uninstalled); spec present for CI |
+
+### M3-blockers (recorded, not fabricated)
+
+1. Local Postgres unavailable (Docker daemon down) → `db:migrate`/`db:seed`/DB
+   integration test live run unverified locally; CI's Postgres service covers it per PR.
+2. No Supabase project/credentials exist → remote migration path documented only.
+3. Playwright browsers not installed here → e2e runs in CI.
+
+### M3 acceptance vs roadmap §7
+
+| Criterion | State |
+| --- | --- |
+| Fresh clone → running app via docs alone | ✅ app boots + health degrades cleanly; full DB path needs Docker (documented) |
+| Production build succeeds | ✅ `npm run build` green |
+| Migration applies AND reverses | ✅ code path complete (up/down/status idempotent); live reversal runs in CI |
+| CI fails on type/lint/test errors | ✅ workflow wired; lint+typecheck proven to fail before fixes here |
+| `.env` ignored, no secrets committed | ✅ verified |
+| Clear error on missing env | ✅ `Invalid environment configuration:\n  - DATABASE_URL: …` asserted in tests |
+
+### Deliberately not done (roadmap boundary)
+
+No M4 tokens/components/shell, no M5 auth/sessions/roles, no M6 taxonomy, no M7
+upload/storage, no M8–M11. No deploy, no paid service, no production migration.
+
+## M4+ — Product implementation
+
+**Status: NOT STARTED.** M3 foundation only. Next is M4 per roadmap §8 (tokens,
+primitives, shell, `/design` route) — do not start in this task.
