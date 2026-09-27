@@ -1,6 +1,5 @@
 import "dotenv/config";
-import { migrateDown, migrateStatus, migrateUp } from "@/db/migrate";
-import { logger } from "@/lib/logger";
+import { describeWriteTarget, migrateDown, migrateStatus, migrateUp } from "@/db/migrate";
 
 const action = process.argv[2];
 
@@ -10,16 +9,19 @@ async function main(): Promise<void> {
   } else if (action === "down") {
     await migrateDown();
   } else if (action === "status") {
-    const rows = await migrateStatus();
-    for (const r of rows) {
-      logger.info("migration status", { version: r.version, applied: r.applied });
-    }
+    await migrateStatus();
   } else {
     throw new Error(`Unknown migrate action: ${String(action)} (expected up|down|status)`);
   }
 }
 
 main().catch((err: unknown) => {
-  logger.error("migration failed", { error: err instanceof Error ? err.message : String(err) });
+  // console: the JSON logger may be level-filtered (CI sets LOG_LEVEL=warn),
+  // which is exactly why `status` previously "completed without printing".
+  console.error(
+    `migration ${String(action ?? "?")} failed (${describeWriteTarget()}): ${
+      err instanceof Error ? err.message : String(err)
+    }`,
+  );
   process.exitCode = 1;
 });

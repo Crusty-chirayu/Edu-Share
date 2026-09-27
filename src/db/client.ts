@@ -1,6 +1,6 @@
 import postgres from "postgres";
 import { drizzle, type PostgresJsDatabase } from "drizzle-orm/postgres-js";
-import { getEnv } from "@/lib/env";
+import { getEffectiveDatabaseUrl } from "@/db/guard";
 
 let client: ReturnType<typeof postgres> | null = null;
 let dbInstance: PostgresJsDatabase | null = null;
@@ -8,12 +8,13 @@ let dbInstance: PostgresJsDatabase | null = null;
 /**
  * Lazy database client. Connection is opened on first query, never at import
  * time — so `next build`, lint, and unit tests never need a live database.
+ * Uses the effective URL (DIRECT_URL when set, else DATABASE_URL) with
+ * `prepare: false` so Supabase pooled (transaction-mode) connections work.
  * Auth boundary only (M3): no product queries live here yet.
  */
 export function getDb(): PostgresJsDatabase {
   if (dbInstance) return dbInstance;
-  const { DATABASE_URL } = getEnv();
-  client = postgres(DATABASE_URL, { max: 10, prepare: true });
+  client = postgres(getEffectiveDatabaseUrl(), { max: 10, prepare: false });
   dbInstance = drizzle(client);
   return dbInstance;
 }

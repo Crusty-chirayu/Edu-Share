@@ -35,12 +35,12 @@ present.
 | Architecture proposal | ✅ Complete — [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md) |
 | UI/UX design system | ✅ Complete — [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md) |
 | Implementation roadmap | ✅ Complete — [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) |
-| Owner decision brief (costs re-verified 2026-09-26) | ✅ Complete — [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) |
-| M2 approval (Option A + Supabase PostgreSQL + Vercel) | ✅ Granted by owner — scope: M3 foundation only |
-| M3 foundation (Next.js App Router + strict TS + env validation + migrations + CI) | ✅ Implemented — see Local setup below |
-| Tests / CI | ✅ Wired — [`.github/workflows/ci.yml`](./.github/workflows/ci.yml) |
+| Owner decision brief | ✅ Complete — [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) |
+| M2 approval (Option A + Supabase + Vercel) | ✅ Granted — scope: M3 foundation only |
+| M3 foundation code | ✅ Implemented (see [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) §M3) |
+| M3 hosted DB verification (`uqcmcurhohbdnxzpdpei`) | ⏳ In progress — run [`docs/SUPABASE.md`](./docs/SUPABASE.md) §6, paste outputs |
+| Tests / CI | ✅ Wired — [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), disposable Postgres service, no Supabase secrets |
 | Deployment | ⬜ Not started (M11) |
-| M4+ product modules (design system, auth, catalogue, resources, AI) | ⬜ Not started — out of scope for this task |
 
 **M3 foundation only — no product features yet.** Auth, catalogue, resources,
 AI, and all M4+ modules are out of scope for this task.
@@ -73,21 +73,27 @@ decision about this project.
 
 ## Local setup
 
-Prerequisites: Node 20–24, npm 11, Docker Desktop (local Postgres).
+Prerequisites: Node 20–24, npm 11. Docker Desktop only for the local-Postgres
+fallback — the primary path is hosted Supabase (see
+[`docs/SUPABASE.md`](./docs/SUPABASE.md) §3 and §6).
 
 ```powershell
 Set-Location E:\projects\edu-share-platform
-Copy-Item .env.example .env
+Copy-Item .env.example .env   # git-ignored; defaults already target local Docker
 npm ci
-docker compose up -d
-npm run db:migrate
-npm run db:seed
+npm run db:inspect            # read-only: identity + foundation-table state
+npm run db:migrate:status     # read-only: prints `migration 0001: applied|pending`
+npm run db:migrate            # guarded write: applies 0001 if pending
+npm run db:seed               # bounded probe write (5 rows max), after `up`
 npm run dev
 ```
 
 App: `http://localhost:3000`. Health: `GET /api/health` (200 with DB, 503
-without). Checks: `npm run typecheck`, `npm run lint`, `npm test -- --run`,
-`npm run build`. Supabase workflow: [`docs/SUPABASE.md`](./docs/SUPABASE.md).
+without). Checks, in the same order CI runs them: `npm run typecheck`,
+`npm run lint`, `npm run format`, `npm test`, `npm run build`. Full M3 runbook
+(including the local Postgres `up`/`down` cycle):
+[`docs/M3-VERIFICATION.md`](./docs/M3-VERIFICATION.md). Supabase workflow:
+[`docs/SUPABASE.md`](./docs/SUPABASE.md).
 
 ---
 
@@ -103,6 +109,7 @@ without). Checks: `npm run typecheck`, `npm run lint`, `npm test -- --run`,
 | [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md) | The short route through the approval gate: each decision's options, trade-offs and costs (every figure re-verified against provider documentation on 2026-09-26), recommended defaults, the questions only the owner can answer, and a copy-pasteable answer block |
 | [`docs/PROJECT-HANDOVER.md`](./docs/PROJECT-HANDOVER.md) | The original handover: verified findings on the inherited system, its licensing position, and its security review |
 | [`docs/SUPABASE.md`](./docs/SUPABASE.md) | Supabase integration boundary and safe migration workflow (M3) |
+| [`docs/M3-VERIFICATION.md`](./docs/M3-VERIFICATION.md) | Owner-run verification runbook for the M3 migration safety work: commands, expected results, and the known formatting-gate issue |
 | [`docs/CONTINUATION-CHECKPOINT.md`](./docs/CONTINUATION-CHECKPOINT.md) | Where to pick up in the next session, including the safety boundaries |
 | [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) | Running log of milestones and their verification |
 

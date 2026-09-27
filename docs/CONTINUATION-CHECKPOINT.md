@@ -60,14 +60,14 @@ handed over and documented.
 Router + TypeScript + Supabase PostgreSQL + Vercel (free-tier limits apply).
 This task implements M3 only; M4/M5 product work is out of scope.
 
-**M3 — FOUNDATION IMPLEMENTED 2026-09-26.** Scaffold, strict TS, env validation,
-`.env.example`, Supabase boundary (`src/lib/supabase.ts` + `docs/SUPABASE.md`),
-reversible migration 0001, seed, health endpoint, logger, error boundary,
-middleware headers, Vitest + Playwright smoke, CI workflow, README setup docs.
-Verified: typecheck ✅, lint ✅, format ✅, unit tests ✅ (7 passed/1 skipped),
-build ✅, `/` 200 + `/api/health` 503-degraded without DB ✅.
-Blocked: live `db:migrate`/`db:seed` (Docker daemon down here — CI covers it),
-no Supabase project exists (documented only), Playwright not run locally.
+**M3 — FOUNDATION IMPLEMENTED 2026-09-26; HOSTED FIXES 2026-09-27 (uncommitted,
+unverified — shell was unusable this session).** Scaffold, strict TS, env
+validation, `.env.example`, Supabase boundary + `docs/SUPABASE.md`, reversible
+migration 0001, seed, health endpoint, middleware headers, Vitest + Playwright
+smoke, CI workflow. 2026-09-27 fixes: silent-`status` root cause (logger level
+filter → stdout), write-target guard (`src/db/guard.ts`), `prepare: false` for
+Supabase pooler, idempotent `up`, read-only `db:inspect`, bounded seed.
+`drizzle/` absence is by design (custom runner; config is future codegen only).
 Details: [`DEVELOPMENT-STATUS.md`](./DEVELOPMENT-STATUS.md) §M3.
 
 ### The three findings that matter most
@@ -94,14 +94,43 @@ Recorded so the audit is not misread:
 
 ---
 
-## Next task: M3 completion gate → M4 (separate task)
+## Next task: M3 verification — run `M3-VERIFICATION.md` §2–§8, then commit
 
-**M3 code is implemented and locally verified per §M3-blockers.**
-Remaining for the gate: (1) start Docker Desktop and run
-`npm run db:migrate` → `:status` → `db:seed` → `db:migrate:down` → `:status` →
-`db:migrate` (G6 reversal proof); (2) push + watch CI green; (3) optionally
-`npx playwright install --with-deps chromium` then `npm run test:e2e`.
-Then M4 (tokens/primitives/shell/`/design`) per roadmap §8 — NOT in this task.
+**Code is implemented but still UNVERIFIED first-hand.** Consecutive sessions —
+this one included — could not execute commands (VS Code terminal integration
+reports "The terminal's shell process has exited; the command was not run."
+before every command, including minimal `echo`). Guard state: exact (never
+substring) Supabase ref matching, `[::1]` loopback, parse-based URL redaction;
+rollback is loopback-only in code and the `schema_migrations` journal is kept
+truthful after a `down`. Suites exist for the guard rules, the migrate runner
+(the driver is stubbed, so a refusal that connected anyway is detectable as a
+non-empty `connectCalls`) and migration-file invariants.
+No typecheck/lint/format/test/build/git/db command has been run against them.
+The ordered owner-run procedure now lives in
+[`M3-VERIFICATION.md`](./M3-VERIFICATION.md) — follow it rather than
+reconstructing commands from this page.
+
+1. Run the five checks (`npx tsc --noEmit`, `npx eslint .`,
+   `npx prettier --check .`, `npx vitest run`, `npm run build`) — fix any
+   failures. Run `npx prettier --write .` (the whole repo) **before** the format
+   check: the tables in `README.md`/`docs/*.md` are not in Prettier's aligned
+   form and `.prettierignore` does not exclude `*.md`, so that check is probably
+   red at HEAD already (see `M3-VERIFICATION.md` §3). Record the real output.
+2. CI-equivalent `up → status → seed → down → status → up` against the
+   disposable `compose.yaml` Postgres ONLY (set `DATABASE_URL`/`DIRECT_URL`
+   to `127.0.0.1` for that session) — `M3-VERIFICATION.md` §5 has the exact
+   sequence and the expected output lines. **Never `down` against hosted
+   Supabase**: that is now refused in code before any connection opens, and §6
+   is the proof of that refusal.
+3. `git --no-pager diff` review (no `.env`, no secrets, only M3 files — always
+   pass `--no-pager`; an interactive pager is what wedged the shell in past
+   sessions), then commit on `main` and push normally to `origin/main` using
+   §8's explicit path list — never `git add .`.
+4. Owner runs `docs/SUPABASE.md` §6 (7 commands, read-mostly; hosted `up`/
+   `seed` are writes by the owner, never `down`) and pastes outputs; agent
+   records them in `docs/SUPABASE.md` §5 + `DEVELOPMENT-STATUS.md`.
+5. Then M4 (tokens/primitives/shell/`/design`) per roadmap §8 — NOT in this
+   task.
 
 ### Constraints verified in the `M2` session (2026-09-26)
 
@@ -133,6 +162,6 @@ Then M4 (tokens/primitives/shell/`/design`) per roadmap §8 — NOT in this task
 ```powershell
 Set-Location E:\projects\edu-share-platform
 git remote -v
-git status
+git --no-pager status -sb   # --no-pager: an interactive pager wedged the shell before
 gh repo view Crusty-chirayu/Edu-Share --json visibility,isFork,defaultBranchRef
 ```

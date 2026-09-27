@@ -218,21 +218,83 @@ PostgreSQL + Vercel, free-tier limits) with scope restricted to M3. M4/M5 NOT st
 
 ### M3-blockers (recorded, not fabricated)
 
-1. Local Postgres unavailable (Docker daemon down) → `db:migrate`/`db:seed`/DB
-   integration test live run unverified locally; CI's Postgres service covers it per PR.
-2. No Supabase project/credentials exist → remote migration path documented only.
-3. Playwright browsers not installed here → e2e runs in CI.
+1. Hosted verification pending owner-run outputs (§6 sequence in
+   `docs/SUPABASE.md`): `db:inspect` → `status` → `migrate` → `status` →
+   `inspect` → `seed` → `inspect` against `uqcmcurhohbdnxzpdpei`. The code is
+   **uncommitted** in the working tree; three consecutive sessions could not
+   execute any command (VS Code terminal integration fails before running with
+   "The terminal's shell process has exited"), so nothing was executed
+   first-hand here and no checks have passed yet.
+2. Local Docker path unverified on this machine (daemon was down in the prior
+   session); hosted Supabase is now the primary path, Docker the fallback.
+3. Playwright e2e not run locally (no DB + browsers uninstalled); spec present
+   for CI, which uses its own disposable Postgres service (no Supabase secrets).
 
-### M3 acceptance vs roadmap §7
+### M3 acceptance vs roadmap §7 (updated 2026-09-27)
 
 | Criterion | State |
 | --- | --- |
-| Fresh clone → running app via docs alone | ✅ app boots + health degrades cleanly; full DB path needs Docker (documented) |
-| Production build succeeds | ✅ `npm run build` green |
-| Migration applies AND reverses | ✅ code path complete (up/down/status idempotent); live reversal runs in CI |
-| CI fails on type/lint/test errors | ✅ workflow wired; lint+typecheck proven to fail before fixes here |
-| `.env` ignored, no secrets committed | ✅ verified |
-| Clear error on missing env | ✅ `Invalid environment configuration:\n  - DATABASE_URL: …` asserted in tests |
+| Fresh clone → running app via docs alone | ✅ app boots + health degrades cleanly; hosted DB path is primary (docs/SUPABASE.md §6), Docker fallback documented |
+| Production build succeeds | ✅ `npm run build` green (prior session; re-verify after these edits) |
+| Migration applies AND reverses | ⏳ code complete (idempotent `up`, guarded writes, reversal on disposable DBs in CI); `down` is now **loopback-only in code** (a ref-matched hosted target is refused before any connection opens, with no env bypass) and the journal row is deleted after a successful `down`; hosted `up` pending owner-run output — `down` NEVER on hosted |
+| Hosted rollback impossible from the CLI | ⏳ enforced in `migrateDown()` ahead of `withClient()`; asserted offline by `src/db/migrate.test.ts` (stubbed driver, zero connection attempts on refusal); owner-run proof is §6 of [`M3-VERIFICATION.md`](./M3-VERIFICATION.md) |
+| Format gate (`npm run format`, CI step "Format check") | ⚠️ most likely RED at HEAD, independent of this session: `.prettierignore` lists config/build artifacts only (`.prettierrc.json`, `eslint.config.mjs`, `next-env.d.ts`, `.next`, `out`, `coverage`, `playwright-report`, `test-results`) and no `*.md` pattern, while the tables in `README.md`/`docs/*.md` are not in Prettier's aligned form. Remedy is one `npx prettier --write .`. Inferred from the file contents and Prettier's documented table alignment — **not executed** (shell unavailable); see [`M3-VERIFICATION.md`](./M3-VERIFICATION.md) §3 |
+| CI fails on type/lint/test errors | ✅ workflow wired on disposable Postgres (no Supabase secrets); re-verify green after this change |
+| `.env` ignored, no secrets committed | ✅ verified (only `.env.example` tracked; new code prints hostnames only) |
+| Clear error on missing env | ✅ asserted in tests; CLI errors now on `console.error` + exit 1 even when `LOG_LEVEL=warn` |
+| Status/inspect always print | ✅ fixed 2026-09-27: stdout `migration 0001: applied|pending`, `db:inspect` identity lines; root cause was `logger.info` filtered by `LOG_LEVEL=warn` |
+| No phantom `drizzle/` dir | ✅ by design: custom runner in `src/db/migrations.ts`; `drizzle.config.ts` is future codegen config only |
+
+### Code changes in this session (2026-09-27, uncommitted until verified)
+
+- `src/db/guard.ts` (+ `guard.test.ts`): write-target assertion — loopback or
+  Supabase ref match; credential-redacting helpers.
+  **Hardened later the same day (second session, shell still unavailable):**
+  `matchesSupabaseRef()` now enforces *exact* hostname `db.<ref>.supabase.co`
+  or `*.pooler.supabase.com` + exactly `postgres.<ref>` decoded user (substring
+  matching removed — `db.<ref>.supabase.co.evil.example.com` refused);
+  `isLoopbackHost()` accepts `[::1]` as WHATWG URLs report it (exported);
+  `redactDatabaseUrl()` rebuilds from parsed URL components (raw `@` in
+  password can no longer leak; unparseable input never echoed). Tests grew to
+  28 (deceptive hostname/user, IPv6, percent-encoding, fail-closed, redaction)
+  with `afterEach` env restoration.
+- `src/db/migrate.ts`: idempotent multi-migration `up` (per-version skip),
+  guarded `up`/`down`, stdout status lines, `prepare: false` (Supabase pooler);
+  `describeWriteTarget()` cannot throw (nested fallback).
+  **Hardened further in the latest session (shell still unavailable):**
+  `migrateDown()` enforces a second, independent barrier — rollback is
+  loopback-only via `isLoopbackHost(target.host)` after `assertWriteTarget()` and
+  throws *before* `withClient()` opens anything, so the ref-matched hosted target
+  that `up` must accept can never be rolled back from the CLI, and there is
+  deliberately no environment-variable bypass. After a successful `down` the
+  migration's `schema_migrations` row is deleted behind a
+  `to_regclass('public.schema_migrations')` truthy check, so `status` cannot
+  report a reverted migration as applied (for `0001` the `down` drops the journal
+  itself, so the check correctly skips the delete — latent safety for later
+  migrations).
+- `src/db/migrate.test.ts` (**new**): stubs the `postgres` driver so "no
+  connection was attempted" is observable — the hosted-refusal cases assert an
+  empty `connectCalls`, proving the barrier precedes the driver. Covers hosted
+  refusal, unconfigured-project refusal, `up` still reaching a hosted target,
+  loopback `down` reaching the driver, and `describeWriteTarget()`.
+- `src/db/guard.test.ts`: negative cases added (missing `DATABASE_URL`,
+  percent-encoded host, trailing-dot host) plus `matchesSupabaseRef` edges.
+- `src/db/migrations.test.ts`: invariant test (unique + strictly sorted versions,
+  unique names).
+- `docs/M3-VERIFICATION.md` (**new**): the ordered owner-run runbook — CI-order
+  checks, the local `compose.yaml` `up`/`down`/`status` cycle, the hosted refusal
+  proof, and the git review/commit steps. `docs/SUPABASE.md` §3/§4/§7 updated to
+  match (the hosted-rollback ban is now enforced in code, not just convention).
+- `scripts/migrate.ts`: stdout output + `console.error` failures (fixes silent
+  `status` under `LOG_LEVEL=warn`).
+- `scripts/inspect-db.ts` (`npm run db:inspect`): read-only identity + table +
+  journal + probe-count reporter (no secrets).
+- `scripts/seed.ts`: guarded, bounded (insert 1 + prune to 5 newest probe rows).
+- `src/db/client.ts`, `src/db/db.integration.test.ts`: effective URL +
+  `prepare: false`; integration test honours the configured Supabase ref.
+- `src/lib/env.ts`: `__setTestEnv` helper for env-mutating tests.
+- `package.json`: `db:inspect` script. `docs/SUPABASE.md` §1–§6 rewritten for
+  the hosted path + exact 7-command verification sequence.
 
 ### Deliberately not done (roadmap boundary)
 

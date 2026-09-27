@@ -57,3 +57,31 @@ export function validateEnv(input: Record<string, unknown>): AppEnv {
 export function __resetEnvCache(): void {
   cached = null;
 }
+
+/**
+ * Test-only: replace `process.env` entries, then clear the cache.
+ * Never reads or writes `.env` files; callers pass literal values.
+ * Returns a restore function for the keys it touched.
+ */
+export function __setTestEnv(values: Record<string, string | undefined>): () => void {
+  const previous = new Map<string, string | undefined>();
+  for (const [key, value] of Object.entries(values)) {
+    if (!previous.has(key)) previous.set(key, process.env[key]);
+    if (value === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = value;
+    }
+  }
+  __resetEnvCache();
+  return () => {
+    for (const [key, value] of previous) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+    __resetEnvCache();
+  };
+}
