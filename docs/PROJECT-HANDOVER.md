@@ -26,18 +26,18 @@ to one's own college.
 
 ## 2. Verified technologies
 
-| Layer | Technology | Evidence |
-| --- | --- | --- |
-| Language | **PHP 8** (dump header: PHP 8.2.12) | `project.sql` header |
-| Database | **MySQL / MariaDB 10.4.32**, `utf8mb4` | `project.sql` header, `mysqli` usage |
-| DB driver | `mysqli`, `prepare` / `bind_param` | all `*.php` |
-| Frontend | Server-rendered HTML + inline PHP | all page files |
-| CSS | **Tailwind CSS via CDN** (`cdn.tailwindcss.com`), inline `<style>` | all page files |
-| Icons | Font Awesome 6.4.0 via CDN | `lib.php`, `favorites.php` |
-| Fonts | Google Fonts (Poppins / Inter) | `lib.php`, `login1.php` |
-| JS | Vanilla JS + `fetch()` to JSON endpoints | `favorites.php`, `mainhome.php` |
-| Auth | PHP native sessions + `password_hash` / `password_verify` | `login1.php`, `register.php` |
-| Tooling | **None** — no Composer, npm, package.json, tests, or CI | directory listing |
+| Layer     | Technology                                                         | Evidence                             |
+| --------- | ------------------------------------------------------------------ | ------------------------------------ |
+| Language  | **PHP 8** (dump header: PHP 8.2.12)                                | `project.sql` header                 |
+| Database  | **MySQL / MariaDB 10.4.32**, `utf8mb4`                             | `project.sql` header, `mysqli` usage |
+| DB driver | `mysqli`, `prepare` / `bind_param`                                 | all `*.php`                          |
+| Frontend  | Server-rendered HTML + inline PHP                                  | all page files                       |
+| CSS       | **Tailwind CSS via CDN** (`cdn.tailwindcss.com`), inline `<style>` | all page files                       |
+| Icons     | Font Awesome 6.4.0 via CDN                                         | `lib.php`, `favorites.php`           |
+| Fonts     | Google Fonts (Poppins / Inter)                                     | `lib.php`, `login1.php`              |
+| JS        | Vanilla JS + `fetch()` to JSON endpoints                           | `favorites.php`, `mainhome.php`      |
+| Auth      | PHP native sessions + `password_hash` / `password_verify`          | `login1.php`, `register.php`         |
+| Tooling   | **None** — no Composer, npm, package.json, tests, or CI            | directory listing                    |
 
 **No build step, no dependency manager, no automated tests, no CI/CD.**
 
@@ -105,18 +105,18 @@ immediately regardless (see §7.1).
 Database name `project`. All tables InnoDB / `utf8mb4_general_ci`; foreign keys
 are added afterwards via `ALTER TABLE`, not declared inline.
 
-| Table | Purpose | Notable columns |
-| --- | --- | --- |
-| `users` | Accounts | `full_name`, `gmail` (UNIQUE), `password`, `user_type`, `university_id`, `department_id`, `branch`, `year`, `contact`, `address` |
-| `universities` | Institutions | `name` UNIQUE |
-| `departments` | Departments | `name`, `university_id`, `branch_id`; UNIQUE(`university_id`,`name`) |
-| `branches` | Campuses | one seed row: `'Main Campus'` |
-| `courses` | Programmes | `name` **UNIQUE globally**, `university_id`, `department_id` |
-| `subjects` | Subjects | `name`, `course_id`, `department_id`, `semester` |
-| `materials` | Uploaded files | `title`, `description`, `file_path`, `university_id`, `department_id`, `course_id`, `subject_id`, `semester`, `user_id`, `upload_group_id`, `branch_for` (NOT NULL, unused) |
-| `material_favorites` | Saved items | UNIQUE(`user_id`,`material_id`); **duplicate** `created_at` + `favorited_at` |
-| `university_favorites` | Followed institutions | UNIQUE(`user_id`,`university_id`) |
-| `user_favorites` | **Orphan / dead table** — no FK, referenced by no code | — |
+| Table                  | Purpose                                                | Notable columns                                                                                                                                                             |
+| ---------------------- | ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`                | Accounts                                               | `full_name`, `gmail` (UNIQUE), `password`, `user_type`, `university_id`, `department_id`, `branch`, `year`, `contact`, `address`                                            |
+| `universities`         | Institutions                                           | `name` UNIQUE                                                                                                                                                               |
+| `departments`          | Departments                                            | `name`, `university_id`, `branch_id`; UNIQUE(`university_id`,`name`)                                                                                                        |
+| `branches`             | Campuses                                               | one seed row: `'Main Campus'`                                                                                                                                               |
+| `courses`              | Programmes                                             | `name` **UNIQUE globally**, `university_id`, `department_id`                                                                                                                |
+| `subjects`             | Subjects                                               | `name`, `course_id`, `department_id`, `semester`                                                                                                                            |
+| `materials`            | Uploaded files                                         | `title`, `description`, `file_path`, `university_id`, `department_id`, `course_id`, `subject_id`, `semester`, `user_id`, `upload_group_id`, `branch_for` (NOT NULL, unused) |
+| `material_favorites`   | Saved items                                            | UNIQUE(`user_id`,`material_id`); **duplicate** `created_at` + `favorited_at`                                                                                                |
+| `university_favorites` | Followed institutions                                  | UNIQUE(`user_id`,`university_id`)                                                                                                                                           |
+| `user_favorites`       | **Orphan / dead table** — no FK, referenced by no code | —                                                                                                                                                                           |
 
 ### 4.1 Schema observations
 
@@ -186,6 +186,7 @@ AJAX path is broken.
 ## 6. What works, what does not
 
 ### Verified functional (in the original folder layout)
+
 - Login / logout, bcrypt password storage, session regeneration.
 - Registration with auto-created university / department.
 - Material listing with multi-filter plus text search (prepared statements).
@@ -195,20 +196,21 @@ AJAX path is broken.
 
 ### Confirmed broken or incomplete **[VERIFIED from source]**
 
-| Issue | Evidence |
-| --- | --- |
-| Entire navigation / `require` graph | Mismatched relative paths (see 3.1) |
-| Subject creation | `subjects.semester` is NOT NULL and never supplied |
-| `admin.php` | Markdown fences; also queries columns that do not exist (`department_name`, `course_name`, `subject_name`) |
-| AJAX favourite toggle | POSTs JSON; server reads `$_GET` |
-| `university_teachers.php` | Duplicate of `toggle_university_favorite.php` |
-| `lib.php` markup | Stray `</a>`; "View" opens a binary inline in the browser |
-| Multi-file upload | Capped at 2 files regardless of input |
-| `branch` / `year` / `contact` / `address` | Collected at registration, never used anywhere in the UI |
-| `roll_number` | Has a UNIQUE key, but is commented out of both the form and the INSERT |
-| `upload_group_id` | Written on every upload, read by no code |
+| Issue                                     | Evidence                                                                                                   |
+| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Entire navigation / `require` graph       | Mismatched relative paths (see 3.1)                                                                        |
+| Subject creation                          | `subjects.semester` is NOT NULL and never supplied                                                         |
+| `admin.php`                               | Markdown fences; also queries columns that do not exist (`department_name`, `course_name`, `subject_name`) |
+| AJAX favourite toggle                     | POSTs JSON; server reads `$_GET`                                                                           |
+| `university_teachers.php`                 | Duplicate of `toggle_university_favorite.php`                                                              |
+| `lib.php` markup                          | Stray `</a>`; "View" opens a binary inline in the browser                                                  |
+| Multi-file upload                         | Capped at 2 files regardless of input                                                                      |
+| `branch` / `year` / `contact` / `address` | Collected at registration, never used anywhere in the UI                                                   |
+| `roll_number`                             | Has a UNIQUE key, but is commented out of both the form and the INSERT                                     |
+| `upload_group_id`                         | Written on every upload, read by no code                                                                   |
 
 ### Explicitly absent **[VERIFIED]**
+
 No tests, no CI/CD, no `composer.json` or `package.json`, no `.env` or config
 layer (credentials hardcoded in three files), no email verification, no password
 reset, no rate limiting or brute-force protection, no admin role, no CSRF tokens
@@ -220,17 +222,20 @@ log, no API versioning, no deployment configuration.
 ## 7. Security concerns, ordered by severity
 
 ### 7.1 SQL injection — high **[VERIFIED]**
+
 `admin.php` executes `$conn->query("DELETE FROM departments WHERE id = $id");`
 plus roughly eight more interpolated statements. The only mitigation is
 `intval()` on that one parameter and an unverified `teacher`-role gate.
 
 ### 7.2 Broken access control — high **[VERIFIED]**
+
 `admin.php` authorises any user whose `user_type` is `teacher` to delete
 departments, courses, and subjects globally. Any self-registered "teacher"
 account is effectively an administrator. By contrast `delete_material.php`
 correctly verifies `$material['user_id'] != $user_id`.
 
 ### 7.3 Sensitive personal data in the source dump — high **[VERIFIED]**
+
 `project.sql` contains a **full data export**: five users with real names, Gmail
 addresses, phone numbers, home addresses, and **bcrypt password hashes**, plus
 eight material rows. This is personal data belonging to third parties.
@@ -239,31 +244,37 @@ eight material rows. This is personal data belonging to third parties.
 > asking the original author to rotate those credentials and remove the dump.
 
 ### 7.4 Hardcoded credentials — high **[VERIFIED]**
+
 `root` with an empty password, duplicated in `db_connect.php`, `login1.php`, and
 `register.php`. There is no environment layer at all.
 
 ### 7.5 No CSRF protection — medium **[VERIFIED]**
+
 Every state-changing action (register, login, upload, delete, favourite) is a
 plain form or a GET link with no token. Deletion is reachable via a crafted link.
 
 ### 7.6 Weak upload controls — medium **[VERIFIED]**
+
 The extension allowlist is reasonable, but there is **no MIME or content
 validation**; `uploads/` is created with `0777`; the directory is **served
 directly by the web server**, so a bypass of the allowlist would allow execution;
 and filenames use `uniqid()`, which is time-based and guessable.
 
 ### 7.7 Authorisation inconsistency — medium **[VERIFIED]**
+
 `lib.php` shows **all** materials platform-wide to any logged-in user, while the
 product premise is institution-scoped sharing. `favorites.php` also links to
 `../profile/download.php`, a path that does not exist.
 
 ### 7.8 Output-encoding bug — low/medium **[VERIFIED]**
+
 Most output correctly uses `htmlspecialchars()`, but `admin.php` interpolates
 values straight into HTML attributes, and `process_upload.php` escapes **before
 storing** (`htmlspecialchars($_POST['title'])`). Data is therefore encoded in the
 database and double-encoded on output — a correctness bug as well as a smell.
 
 ### 7.9 Error disclosure — low **[VERIFIED]**
+
 `die("SQL Prepare Error: " . $conn->error)`, `die("Connection failed: " ...)`,
 and raw mysqli errors surfaced to end users in `process_upload.php`.
 
@@ -315,6 +326,7 @@ reserved**. There is therefore **no permission** to copy, modify, or redistribut
 that code into this repository.
 
 **Decisions taken:**
+
 1. **No inherited source has been committed to this repository.** Done.
 2. `project.sql` is excluded through `.gitignore` (PII plus password hashes). Done.
 3. Inherited source stays on the original machine, unmodified, as reference only. Done.
@@ -325,49 +337,49 @@ from the original author and record it in `docs/THIRD-PARTY-NOTICES.md`. Until
 then, treat the inherited code as read-only reference material.
 
 **Our own license.** This repository carries an MIT `LICENSE` (copyright 2026
-Chirayu) that was already present in the remote. It covers *our* work only. It
+Chirayu) that was already present in the remote. It covers _our_ work only. It
 grants no rights over the original author's contributions, and none are claimed.
 
 ---
 
 ## 11. What is worth preserving (product thinking, not code)
 
-| Preserve | Rationale |
-| --- | --- |
-| The **University -> Department -> Course -> Subject -> Semester** taxonomy | Correct domain model; the core of the product |
-| The **information architecture** (Home / Library / Favorites / Dashboard / Upload) | Maps well onto real student workflows |
-| **Cross-institution discovery** as the differentiator | Genuinely valuable and under-built in the original |
-| `download.php`'s `basename()` plus session-check pattern | Sound instinct, even though thin |
-| bcrypt and `session_regenerate_id` | Correct choices, worth carrying forward |
-| Prepared-statement discipline in the read paths | Good habit, inconsistently applied |
+| Preserve                                                                           | Rationale                                          |
+| ---------------------------------------------------------------------------------- | -------------------------------------------------- |
+| The **University -> Department -> Course -> Subject -> Semester** taxonomy         | Correct domain model; the core of the product      |
+| The **information architecture** (Home / Library / Favorites / Dashboard / Upload) | Maps well onto real student workflows              |
+| **Cross-institution discovery** as the differentiator                              | Genuinely valuable and under-built in the original |
+| `download.php`'s `basename()` plus session-check pattern                           | Sound instinct, even though thin                   |
+| bcrypt and `session_regenerate_id`                                                 | Correct choices, worth carrying forward            |
+| Prepared-statement discipline in the read paths                                    | Good habit, inconsistently applied                 |
 
 ## 12. What should be replaced
 
-| Replace | Reason |
-| --- | --- |
-| PHP procedural + `mysqli`, no framework | No structure, no testability, no migrations |
-| Hardcoded credentials | Unacceptable for a new project |
-| Flat multi-file page architecture | No shared layout, duplicated code |
-| CDN Tailwind, no design system | Unacceptable for a premium product |
-| Global `courses.name` UNIQUE | Blocks the product's core premise |
-| `user_favorites` dead table, duplicated timestamps, unused columns | Data-model debt |
-| `branches` as a single hardcoded row | Premature abstraction |
-| GET-driven mutations with no CSRF | Security debt |
-| Web-served `uploads/` directory | Storage and permission risk |
+| Replace                                                            | Reason                                      |
+| ------------------------------------------------------------------ | ------------------------------------------- |
+| PHP procedural + `mysqli`, no framework                            | No structure, no testability, no migrations |
+| Hardcoded credentials                                              | Unacceptable for a new project              |
+| Flat multi-file page architecture                                  | No shared layout, duplicated code           |
+| CDN Tailwind, no design system                                     | Unacceptable for a premium product          |
+| Global `courses.name` UNIQUE                                       | Blocks the product's core premise           |
+| `user_favorites` dead table, duplicated timestamps, unused columns | Data-model debt                             |
+| `branches` as a single hardcoded row                               | Premature abstraction                       |
+| GET-driven mutations with no CSRF                                  | Security debt                               |
+| Web-served `uploads/` directory                                    | Storage and permission risk                 |
 
 ---
 
 ## 13. Git and repository safety
 
-| Item | State |
-| --- | --- |
-| Inherited local dir | `E:\projects\Edu-Share` — **no `.git`, not a clone, no remotes, unmodified** |
-| Parent `E:\projects` | Is a Git repo with **zero commits**, containing 13 unrelated projects |
-| New workspace | `E:\projects\edu-share-platform` — independent `git init`, own `.git` |
-| New remote | `https://github.com/Crusty-chirayu/Edu-Share.git` (verified via `gh repo view`) |
-| Remote repository | `isFork: false`, `visibility: PRIVATE`, default branch `main` |
-| Remote history | One commit, `75cfd10` "Initial commit", containing only `LICENSE` |
-| Integration method | Local `main` branched **from** `origin/main` — linear history, no force-push, no rewrite |
+| Item                 | State                                                                                    |
+| -------------------- | ---------------------------------------------------------------------------------------- |
+| Inherited local dir  | `E:\projects\Edu-Share` — **no `.git`, not a clone, no remotes, unmodified**             |
+| Parent `E:\projects` | Is a Git repo with **zero commits**, containing 13 unrelated projects                    |
+| New workspace        | `E:\projects\edu-share-platform` — independent `git init`, own `.git`                    |
+| New remote           | `https://github.com/Crusty-chirayu/Edu-Share.git` (verified via `gh repo view`)          |
+| Remote repository    | `isFork: false`, `visibility: PRIVATE`, default branch `main`                            |
+| Remote history       | One commit, `75cfd10` "Initial commit", containing only `LICENSE`                        |
+| Integration method   | Local `main` branched **from** `origin/main` — linear history, no force-push, no rewrite |
 
 **Hazard recorded.** The parent directory `E:\projects` is a Git repository with no
 commits. Running `git` from inside `E:\projects\Edu-Share` therefore targets
@@ -391,6 +403,7 @@ commits. Running `git` from inside `E:\projects\Edu-Share` therefore targets
 **Milestone 1 — Technical Audit and Architecture Proposal (documentation only, no code).**
 
 Deliverables:
+
 1. `docs/PROJECT-AUDIT.md` — deeper trace of inherited flows and a prioritised defect list
 2. `docs/PRODUCT-REQUIREMENTS.md` — real student workflows, personas, must / should / won't
 3. `docs/ARCHITECTURE-PROPOSAL.md` — two or three stack options with trade-offs and costs
@@ -401,5 +414,4 @@ Only after the owner **approves the architecture** does implementation begin.
 
 ---
 
-*End of handover.*
-
+_End of handover._

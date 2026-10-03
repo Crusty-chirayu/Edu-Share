@@ -27,7 +27,7 @@ Code:
   factory that records every connection attempt and then throws
   `network disabled in unit tests`. That makes "was a connection attempted?"
   directly observable: the hosted-refusal tests assert `connectCalls` is empty,
-  which is what proves the refusal happens *before* connecting. Covers the
+  which is what proves the refusal happens _before_ connecting. Covers the
   barrier (ref-matched hosted refusal, unconfigured-project refusal, `up` still
   reaching a hosted target, loopback `down` reaching the driver) and
   `describeWriteTarget()` (reports host/source, never credentials; returns
@@ -49,7 +49,7 @@ Docs:
   valid local Docker defaults; Supabase values are optional), check list now
   matches CI order, and this runbook is linked from the docs table.
 - `docs/DEVELOPMENT-STATUS.md`, `docs/CONTINUATION-CHECKPOINT.md` — updated to
-  separate *verified* from *pending*.
+  separate _verified_ from _pending_.
 
 Confirm the exact set with `git --no-pager status -sb` before staging; do not
 stage a file you have not read in the diff.
@@ -125,7 +125,7 @@ here — a skip is expected, not a failure. The suites that matter for this work
 - `src/db/migrate.test.ts` — the rollback barrier with the `postgres` driver
   stubbed. Its stub records every connection attempt and then throws
   `network disabled in unit tests`, so a failure here means either a refusal
-  happened *after* a connection attempt (`connectCalls` non-empty) or a legal
+  happened _after_ a connection attempt (`connectCalls` non-empty) or a legal
   rollback never reached the driver.
 - `src/db/migrations.test.ts` — migration-file invariants (unique, strictly
   sorted versions; unique names).
@@ -261,4 +261,3 @@ This runbook verifies M3 only. No M4 tokens/components/shell, no M5
 auth/sessions/roles, no M6–M11, no deploy, no paid service, and no hosted write
 beyond the already-documented `up` sequence in `docs/SUPABASE.md` §3. The
 inherited project at `E:\projects\Edu-Share` stays untouched.
-

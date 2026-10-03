@@ -14,7 +14,12 @@ import {
   searchParamsSchema,
 } from "@/lib/validation";
 
-const PDF = { key: "resources/ab/notes.pdf", name: "notes.pdf", sizeBytes: 1024, mimeType: "application/pdf" };
+const PDF = {
+  key: "resources/ab/notes.pdf",
+  name: "notes.pdf",
+  sizeBytes: 1024,
+  mimeType: "application/pdf",
+};
 const ID = "3f0c1a2e-4b5d-4a1e-9c3f-8d2b7e6a5c4d";
 
 describe("safeDisplayName", () => {
@@ -39,7 +44,11 @@ describe("fileMetadataSchema", () => {
   });
 
   it("rejects a disallowed extension", () => {
-    const result = fileMetadataSchema.safeParse({ ...PDF, name: "payload.exe", mimeType: "application/octet-stream" });
+    const result = fileMetadataSchema.safeParse({
+      ...PDF,
+      name: "payload.exe",
+      mimeType: "application/octet-stream",
+    });
     expect(result.success).toBe(false);
   });
 
@@ -51,8 +60,34 @@ describe("fileMetadataSchema", () => {
     expect(fileMetadataSchema.safeParse({ ...PDF, key: "../secrets.pdf" }).success).toBe(false);
   });
 
+  it("rejects a storage key with a . or .. path segment", () => {
+    expect(fileMetadataSchema.safeParse({ ...PDF, key: "resources/../secrets.pdf" }).success).toBe(
+      false,
+    );
+    expect(fileMetadataSchema.safeParse({ ...PDF, key: "resources/./notes.pdf" }).success).toBe(
+      false,
+    );
+  });
+
+  it("accepts a server-generated dotted key (regression: dots were rejected)", () => {
+    for (const key of [
+      "resources/ab/notes.pdf",
+      "resources/3f0c1a2e-4b5d-4a1e-9c3f-8d2b7e6a5c4d/9f8e.docx",
+      "notes_v2.final.pdf",
+    ]) {
+      expect(fileMetadataSchema.safeParse({ ...PDF, key }).success).toBe(true);
+    }
+  });
+
+  it("rejects a key that ends with a separator", () => {
+    expect(fileMetadataSchema.safeParse({ ...PDF, key: "resources/ab/" }).success).toBe(false);
+    expect(fileMetadataSchema.safeParse({ ...PDF, key: "/abs/notes.pdf" }).success).toBe(false);
+  });
+
   it("rejects a file over the size limit", () => {
-    expect(fileMetadataSchema.safeParse({ ...PDF, sizeBytes: MAX_UPLOAD_BYTES + 1 }).success).toBe(false);
+    expect(fileMetadataSchema.safeParse({ ...PDF, sizeBytes: MAX_UPLOAD_BYTES + 1 }).success).toBe(
+      false,
+    );
   });
 
   it("rejects a zero-byte or negative size", () => {
@@ -72,7 +107,10 @@ describe("resourceCreateSchema", () => {
   });
 
   it("strips a self-selected role instead of trusting it (AUD-002)", () => {
-    const parsed = resourceCreateSchema.parse({ title: "Lecture slides", role: "admin" }) as Record<string, unknown>;
+    const parsed = resourceCreateSchema.parse({ title: "Lecture slides", role: "admin" }) as Record<
+      string,
+      unknown
+    >;
     expect(parsed.role).toBeUndefined();
   });
 
@@ -85,6 +123,22 @@ describe("resourceUpdateSchema", () => {
   it("requires at least one field", () => {
     expect(resourceUpdateSchema.safeParse({}).success).toBe(false);
     expect(resourceUpdateSchema.safeParse({ title: "New title" }).success).toBe(true);
+  });
+
+  it("turns an empty string or null into an explicit clear", () => {
+    expect(resourceUpdateSchema.parse({ description: "" }).description).toBeNull();
+    expect(resourceUpdateSchema.parse({ description: null }).description).toBeNull();
+    expect(resourceUpdateSchema.parse({ subjectId: "" }).subjectId).toBeNull();
+    expect(resourceUpdateSchema.parse({ subjectId: null }).subjectId).toBeNull();
+  });
+
+  it("distinguishes 'not supplied' from 'clear'", () => {
+    const parsed = resourceUpdateSchema.parse({ title: "New title" });
+    expect("description" in parsed && parsed.description !== undefined).toBe(false);
+  });
+
+  it("rejects a malformed subject id", () => {
+    expect(resourceUpdateSchema.safeParse({ subjectId: "1" }).success).toBe(false);
   });
 });
 
@@ -113,7 +167,9 @@ describe("searchParamsSchema", () => {
 
   it("rejects out-of-range pagination instead of clamping silently", () => {
     expect(searchParamsSchema.safeParse({ page: "0" }).success).toBe(false);
-    expect(searchParamsSchema.safeParse({ pageSize: String(MAX_PAGE_SIZE + 1) }).success).toBe(false);
+    expect(searchParamsSchema.safeParse({ pageSize: String(MAX_PAGE_SIZE + 1) }).success).toBe(
+      false,
+    );
   });
 
   it("treats a blank query as no query", () => {
@@ -166,7 +222,9 @@ describe("error exposure", () => {
   });
 
   it("hides an unknown error behind a generic 500 body", () => {
-    const { status, body } = toPublicError(new Error("boom: postgres://user:pw@127.0.0.1:5432/edushare"));
+    const { status, body } = toPublicError(
+      new Error("boom: postgres://user:pw@127.0.0.1:5432/edushare"),
+    );
     expect(status).toBe(500);
     expect(JSON.stringify(body)).not.toContain("pw@");
     expect(body.error.message).not.toContain("boom");

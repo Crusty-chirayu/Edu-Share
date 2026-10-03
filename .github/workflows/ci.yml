@@ -59,3 +59,50 @@ jobs:
           npm run db:migrate
       - name: Production build
         run: npm run build
+
+  # Browser acceptance. A separate job on purpose: it must NOT inherit
+  # `NODE_ENV=test`, because `src/lib/env.ts` deliberately refuses to pair
+  # `EDU_SHARE_DEV_AUTH=1` with `NODE_ENV=test`, and the suite needs the
+  # development identity adapter to sign in at all.
+  #
+  # `PLAYWRIGHT_BROWSER_CHANNEL` is intentionally absent: CI uses the pinned
+  # Playwright browser, which is the whole reason that override is opt-in.
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: edushare
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d edushare"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/edushare
+      DIRECT_URL: postgres://postgres:postgres@127.0.0.1:5432/edushare
+      APP_URL: http://127.0.0.1:3000
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Install
+        run: npm ci
+      # The pinned build, installed explicitly. The suite's runner refuses to
+      # start when port 3000 is occupied, so nothing else may bind it.
+      - name: Install the pinned browser
+        run: npx playwright install --with-deps chromium
+      - name: Migrate the disposable database
+        run: npm run db:migrate
+      # `npm run test:e2e`, not `npx playwright test`: the wrapper is what makes
+      # the server local-only. See scripts/run-e2e.ts.
+      - name: Browser acceptance tests
+        run: npm run test:e2e

@@ -12,23 +12,26 @@
 
 export type DomainErrorCode =
   | "invalid_input"
-  | "not_found"
+  | "unauthorized"
   | "forbidden"
+  | "not_found"
   | "conflict"
   | "unavailable";
 
 const STATUS_BY_CODE: Record<DomainErrorCode, number> = {
   invalid_input: 400,
-  not_found: 404,
+  unauthorized: 401,
   forbidden: 403,
+  not_found: 404,
   conflict: 409,
   unavailable: 503,
 };
 
 const SAFE_MESSAGE_BY_CODE: Record<DomainErrorCode, string> = {
   invalid_input: "Some of the submitted values are not valid.",
-  not_found: "That item could not be found.",
+  unauthorized: "You need to sign in to do that.",
   forbidden: "You are not allowed to do that.",
+  not_found: "That item could not be found.",
   conflict: "That action conflicts with the current state.",
   unavailable: "The service is temporarily unavailable. Please try again.",
 };
@@ -66,6 +69,10 @@ export class AppError extends Error {
     return new AppError("not_found", message ? { message } : {});
   }
 
+  static unauthorized(message?: string): AppError {
+    return new AppError("unauthorized", message ? { message } : {});
+  }
+
   static forbidden(message?: string): AppError {
     return new AppError("forbidden", message ? { message } : {});
   }
@@ -101,5 +108,8 @@ export function toPublicError(error: unknown): {
       },
     };
   }
-  return { status: 500, body: { error: { code: "unavailable", message: SAFE_MESSAGE_BY_CODE.unavailable } } };
+  return {
+    status: 500,
+    body: { error: { code: "unavailable", message: SAFE_MESSAGE_BY_CODE.unavailable } },
+  };
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="32" height="32" fill="none">
+  <!-- The Passed Page — EDU-SHARE Symbol -->
+  <!-- Background canvas for favicon visibility -->
+  <rect width="24" height="24" rx="5" fill="#1b2a4a"/>
+  <!-- Rear sheet (offset up-right) -->
+  <path d="M10 4.5h8a1.5 1.5 0 0 1 1.5 1.5v10a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 8.5 16V6A1.5 1.5 0 0 1 10 4.5z" fill="#93c5fd" opacity="0.45"/>
+  <!-- Front sheet with negative space creating E -->
+  <path d="M5.5 7.5h8A1.5 1.5 0 0 1 15 9v1.2H9v1.6h4.5v1.4H9v1.6h6V19a1.5 1.5 0 0 1-1.5 1.5h-8A1.5 1.5 0 0 1 4 19V9a1.5 1.5 0 0 1 1.5-1.5z" fill="#ffffff"/>
+  <!-- The Amber Node: the point of shared transfer -->
+  <circle cx="14.5" cy="12.5" r="1.5" fill="#f59e0b"/>
+</svg>

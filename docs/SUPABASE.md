@@ -5,13 +5,13 @@
 
 ## 1. Which pieces touch Supabase
 
-| Piece | File | Behaviour when unconfigured |
-| --- | --- | --- |
-| Lazy client boundary | `src/lib/supabase.ts` | `getSupabase()` returns `null`; `isSupabaseConfigured()` is `false` |
-| Env validation | `src/lib/env.ts` | `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` default to `""` (optional) |
-| Health endpoint | `src/app/api/health/route.ts` | Reports local `DATABASE_URL` reachability only; never pings Supabase |
-| Migration runner | `src/db/migrate.ts` + `src/db/guard.ts` | `status` is read-only (no guard); `up`/`down` assert the target first: loopback, or a Supabase host whose project ref matches `NEXT_PUBLIC_SUPABASE_URL` |
-| Read-only inspector | `scripts/inspect-db.ts` (`npm run db:inspect`) | Prints DB identity (no credentials), foundation-table presence, journal rows, probe count |
+| Piece                | File                                           | Behaviour when unconfigured                                                                                                                              |
+| -------------------- | ---------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lazy client boundary | `src/lib/supabase.ts`                          | `getSupabase()` returns `null`; `isSupabaseConfigured()` is `false`                                                                                      |
+| Env validation       | `src/lib/env.ts`                               | `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` default to `""` (optional)                                                                                      |
+| Health endpoint      | `src/app/api/health/route.ts`                  | Reports local `DATABASE_URL` reachability only; never pings Supabase                                                                                     |
+| Migration runner     | `src/db/migrate.ts` + `src/db/guard.ts`        | `status` is read-only (no guard); `up`/`down` assert the target first: loopback, or a Supabase host whose project ref matches `NEXT_PUBLIC_SUPABASE_URL` |
+| Read-only inspector  | `scripts/inspect-db.ts` (`npm run db:inspect`) | Prints DB identity (no credentials), foundation-table presence, journal rows, probe count                                                                |
 
 ## 2. Local development (verified path)
 
@@ -46,7 +46,7 @@ Docker Desktop is optional. Two supported paths:
 5. **Never run `db:migrate:down` against hosted Supabase.** Rollback exists for
    disposable local/CI databases only (gate G6 runs it there). This is now
    enforced in code, not just by convention: `migrateDown()` refuses any
-   non-loopback host — including a ref-matched hosted one — *before* it opens a
+   non-loopback host — including a ref-matched hosted one — _before_ it opens a
    connection, so the hosted project cannot be rolled back from the CLI at all.
 
 ## 4. Safety rules (standing)
@@ -85,18 +85,18 @@ Docker Desktop is optional. Two supported paths:
 ## 5. Verification log (this task — shell unavailable, results owner-reported)
 
 > The dev-machine shell was unavailable to this session (`shell process has
-> exited` on every command), so hosted commands were executed by the owner in
+exited` on every command), so hosted commands were executed by the owner in
 > their own terminal and their outputs pasted back. Results below are recorded
 > as owner-reported, not first-hand.
 
-| Check | Result |
-| --- | --- |
-| `npm run db:inspect` | ⏳ pending — paste output in next session |
-| `npm run db:migrate:status` | ⏳ pending — expect `migration 0001: applied` or `pending` on stdout (fix: status no longer goes through the level-filtered logger) |
-| `npm run db:migrate` | ⏳ pending — safe to run: guard + idempotent skip; no destructive SQL (only two `CREATE TABLE IF NOT EXISTS` + journal insert) |
-| `npm run db:seed` | ⏳ pending — run after `up`; bounded probe write only |
+| Check                        | Result                                                                                                                                                                                                          |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run db:inspect`         | ⏳ pending — paste output in next session                                                                                                                                                                       |
+| `npm run db:migrate:status`  | ⏳ pending — expect `migration 0001: applied` or `pending` on stdout (fix: status no longer goes through the level-filtered logger)                                                                             |
+| `npm run db:migrate`         | ⏳ pending — safe to run: guard + idempotent skip; no destructive SQL (only two `CREATE TABLE IF NOT EXISTS` + journal insert)                                                                                  |
+| `npm run db:seed`            | ⏳ pending — run after `up`; bounded probe write only                                                                                                                                                           |
 | Why status was silent before | Diagnosed: `scripts/migrate.ts` logged status via `logger.info`, and `LOG_LEVEL=warn` in CI/owner env suppressed `info` — exit 0, no output. Now uses `console.log`. Errors use `console.error` + nonzero exit. |
-| Why `drizzle/` is absent | By design (custom runner, not drizzle-kit `generate`). Documented, no files to reconstruct. |
+| Why `drizzle/` is absent     | By design (custom runner, not drizzle-kit `generate`). Documented, no files to reconstruct.                                                                                                                     |
 
 ## 6. Exact verification sequence (run in the project root, in order)
 
@@ -151,5 +151,5 @@ npm run db:migrate:down
 The full ordered runbook — typecheck, lint, format, tests, build, the local
 cycle above, the hosted refusal proof, and the git review/commit steps — is
 [`M3-VERIFICATION.md`](./M3-VERIFICATION.md). This document (§5) still records
-the *hosted* commands as owner-reported and pending; the runbook adds the
+the _hosted_ commands as owner-reported and pending; the runbook adds the
 local rollback cycle and the refusal proof on top.

@@ -141,8 +141,7 @@ describe("migration write-target guard", () => {
 
   it("refuses a pooler host whose username is not exactly postgres.<ref>", () => {
     setEnv({
-      DATABASE_URL:
-        `postgres://postgres.${ref}.evil:secret@aws-0-eu-central-1.pooler.supabase.com:6543/postgres`,
+      DATABASE_URL: `postgres://postgres.${ref}.evil:secret@aws-0-eu-central-1.pooler.supabase.com:6543/postgres`,
       NEXT_PUBLIC_SUPABASE_URL: supabaseUrl,
     });
     expect(() => assertWriteTarget()).toThrow(/does not match Supabase project ref/);

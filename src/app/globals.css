@@ -1,0 +1,14 @@
+/**
+ * EDU-SHARE 2.0 Design System
+ * Layered Vanilla-CSS Architecture
+ */
+
+@layer reset, tokens, base, layout, components, pages, utilities;
+
+@import "../styles/reset.css";
+@import "../styles/tokens.css";
+@import "../styles/base.css";
+@import "../styles/layout.css";
+@import "../styles/components.css";
+@import "../styles/pages.css";
+@import "../styles/utilities.css";

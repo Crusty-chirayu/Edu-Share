@@ -8,7 +8,7 @@ import { z } from "zod";
  * No defaults for credentials: an absent DATABASE_URL is an error, not localhost magic.
  */
 
-const envSchema = z.object({
+const baseEnvSchema = z.object({
   DATABASE_URL: z
     .string()
     .min(1, "DATABASE_URL is required (e.g. postgres://postgres:postgres@127.0.0.1:5432/edushare)")
@@ -25,10 +25,67 @@ const envSchema = z.object({
     .optional()
     .default(""),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional().default(""),
+  /** Private storage bucket for uploaded resources. Empty means storage is unconfigured. */
+  SUPABASE_STORAGE_BUCKET: z
+    .string()
+    .regex(/^[a-z0-9][a-z0-9-]{1,61}[a-z0-9]$|^$/, {
+      message: "SUPABASE_STORAGE_BUCKET must be empty or a lowercase Supabase bucket name",
+    })
+    .optional()
+    .default(""),
+  /**
+   * Development-only identity provider ("1" to enable). It exists so the product
+   * can be exercised before Supabase credentials exist, and it is deliberately
+   * impossible to turn on in production — see the `superRefine` below.
+   */
+  EDU_SHARE_DEV_AUTH: z.enum(["0", "1"]).optional().default("0"),
+  /**
+   * Development-only local filesystem storage adapter ("1" to enable). Never
+   * available in production, and never a silent fallback: when this is off and
+   * Supabase Storage is unconfigured, uploads are refused with an explanation.
+   */
+  EDU_SHARE_LOCAL_STORAGE: z.enum(["0", "1"]).optional().default("0"),
   APP_URL: z.string().url("APP_URL must be a valid URL (e.g. http://localhost:3000)"),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   LOG_LEVEL: z.enum(["debug", "info", "warn", "error"]).default("info"),
 });
+
+/**
+ * Cross-field rules that must fail closed.
+ *
+ * `EDU_SHARE_DEV_AUTH=1` in production is a configuration error, not a warning: the
+ * development adapter creates sessions without an identity provider, so allowing it
+ * to boot in production would silently authenticate every caller. The process
+ * refuses to start instead.
+ */
+function refineEnv(value: z.infer<typeof baseEnvSchema>, ctx: z.RefinementCtx): void {
+  if (value.NODE_ENV === "production" && value.EDU_SHARE_DEV_AUTH === "1") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["EDU_SHARE_DEV_AUTH"],
+      message:
+        "EDU_SHARE_DEV_AUTH is a development-only identity adapter and must not be enabled when NODE_ENV=production",
+    });
+  }
+  if (value.EDU_SHARE_DEV_AUTH === "1" && value.NODE_ENV === "test") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["EDU_SHARE_DEV_AUTH"],
+      message:
+        "leave EDU_SHARE_DEV_AUTH unset under NODE_ENV=test; tests configure identity explicitly",
+    });
+  }
+  if (value.NODE_ENV === "production" && value.EDU_SHARE_LOCAL_STORAGE === "1") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["EDU_SHARE_LOCAL_STORAGE"],
+      message:
+        "EDU_SHARE_LOCAL_STORAGE writes uploads to the local filesystem and must not be enabled when NODE_ENV=production",
+    });
+  }
+}
+
+const envSchema = baseEnvSchema.superRefine(refineEnv);
 
 export type AppEnv = z.infer<typeof envSchema>;
 
