@@ -11,6 +11,7 @@ Running log of EDU-SHARE milestones. Newest first.
 **Type:** Documentation and source control only. No application code written.
 
 ### Completed
+
 - Inspected the inherited EDU-SHARE application in full: 24 PHP files plus
   `project.sql`. Traced auth, upload, retrieval, favourite, and AJAX flows.
 - Documented verified technologies, data model, features, defects, and security
@@ -26,15 +27,17 @@ Running log of EDU-SHARE milestones. Newest first.
 - Rewrote `README.md` to reflect the project's real, pre-implementation state.
 
 ### Key decisions
-| Decision | Rationale |
-| --- | --- |
-| Do **not** commit inherited PHP source | No LICENSE found in the inherited project; "no license" means all rights reserved |
-| Do **not** commit `project.sql` | Contains real PII and bcrypt password hashes |
-| New independent directory rather than reusing `E:\projects\Edu-Share` | That path is not a Git repo, and its parent `E:\projects` is a different zero-commit repo; reusing it risked targeting the wrong repository |
-| Branch from the existing remote commit rather than a fresh root commit | Preserves the remote's existing history and avoids any force-push |
-| No `.env.example` yet | No architecture or config surface exists to justify one; placeholders without a real consumer would be misleading |
+
+| Decision                                                               | Rationale                                                                                                                                   |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| Do **not** commit inherited PHP source                                 | No LICENSE found in the inherited project; "no license" means all rights reserved                                                           |
+| Do **not** commit `project.sql`                                        | Contains real PII and bcrypt password hashes                                                                                                |
+| New independent directory rather than reusing `E:\projects\Edu-Share`  | That path is not a Git repo, and its parent `E:\projects` is a different zero-commit repo; reusing it risked targeting the wrong repository |
+| Branch from the existing remote commit rather than a fresh root commit | Preserves the remote's existing history and avoids any force-push                                                                           |
+| No `.env.example` yet                                                  | No architecture or config surface exists to justify one; placeholders without a real consumer would be misleading                           |
 
 ### Findings that drive the roadmap
+
 - The inherited app **cannot run as delivered** — its `require` and redirect
   paths assume a folder layout that this checkout does not have.
 - `admin.php` is not valid PHP and contains SQL injection plus broken access control.
@@ -43,6 +46,7 @@ Running log of EDU-SHARE milestones. Newest first.
 - No admin role, no CSRF protection, no tests, no CI, no config layer.
 
 ### Carried into next milestone
+
 - Open questions for the owner are listed in
   [`CONTINUATION-CHECKPOINT.md`](./CONTINUATION-CHECKPOINT.md): deployment
   target, budget for managed services, AI-feature scope, and content policy.
@@ -99,14 +103,14 @@ Running log of EDU-SHARE milestones. Newest first.
 
 ### Verification actually performed
 
-| Check | Result |
-| --- | --- |
-| All five documents exist with substantive content | ✅ |
-| Relative links resolve from their own directory | ✅ |
-| Markdown tables well-formed (header/separator consistency) | ✅ |
-| Secret, credential and personal-data pattern scan | ✅ no matches |
-| Application source, manifests or lockfiles introduced | ✅ none present |
-| Change set is documentation-only | ✅ confirmed against `git status` |
+| Check                                                      | Result                            |
+| ---------------------------------------------------------- | --------------------------------- |
+| All five documents exist with substantive content          | ✅                                |
+| Relative links resolve from their own directory            | ✅                                |
+| Markdown tables well-formed (header/separator consistency) | ✅                                |
+| Secret, credential and personal-data pattern scan          | ✅ no matches                     |
+| Application source, manifests or lockfiles introduced      | ✅ none present                   |
+| Change set is documentation-only                           | ✅ confirmed against `git status` |
 
 ### Carried into the next milestone
 
@@ -154,14 +158,14 @@ installed; no account created, no service subscribed to, nothing deployed.
 
 ### Verification actually performed
 
-| Check | Result |
-| --- | --- |
-| Every figure in the brief traceable to a provider URL and a check date | ✅ §4 and §13 of the brief |
-| Figures differ from the `M1` documents | ✅ recorded explicitly as eight deltas, not silently corrected |
-| Change set is documentation-only | ✅ `git status` shows only `.md` files |
-| Secret, credential and personal-data pattern scan | ✅ no matches |
-| Application source, manifest or lockfile introduced | ✅ none present |
-| No resource created, subscribed to, or deployed | ✅ nothing outside the repository was touched |
+| Check                                                                  | Result                                                         |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Every figure in the brief traceable to a provider URL and a check date | ✅ §4 and §13 of the brief                                     |
+| Figures differ from the `M1` documents                                 | ✅ recorded explicitly as eight deltas, not silently corrected |
+| Change set is documentation-only                                       | ✅ `git status` shows only `.md` files                         |
+| Secret, credential and personal-data pattern scan                      | ✅ no matches                                                  |
+| Application source, manifest or lockfile introduced                    | ✅ none present                                                |
+| No resource created, subscribed to, or deployed                        | ✅ nothing outside the repository was touched                  |
 
 ### Deliberately not done
 
@@ -204,17 +208,17 @@ PostgreSQL + Vercel, free-tier limits) with scope restricted to M3. M4/M5 NOT st
 
 ### Verification actually performed (this machine, 2026-09-26)
 
-| Check (exact command) | Result |
-| --- | --- |
-| `npx tsc --noEmit` | ✅ pass, exit 0 |
-| `npx eslint .` | ✅ pass, exit 0 (after fixing `no-html-link-for-pages`, `no-console`) |
-| `npx prettier --check <scoped paths>` | ✅ pass (docs excluded; pre-existing docs use other wrapping) |
-| `npx vitest run` | ✅ 3 files passed, 7 tests passed, 1 skipped (`db.integration` needs live DB) |
-| `npm run build` | ✅ pass (added `"use client"` to `error.tsx`; routes `/`, `/_not-found`, `/api/health`) |
-| `dev` on :3100 + `GET /api/health` | ✅ `/` 200; `/api/health` 503 `{"status":"degraded","db":"down"}` (correct: no DB here) |
-| `npm run db:migrate:status` | ⚠️ fails closed as designed: `connect ECONNREFUSED 127.0.0.1:5432` (no Postgres here) |
-| `docker compose up -d` | ❌ Docker Desktop daemon not running (`npipe/...dockerDesktopLinuxEngine` missing) |
-| `npx playwright test` | ⏭️ not run locally (no DB + browsers uninstalled); spec present for CI |
+| Check (exact command)                 | Result                                                                                  |
+| ------------------------------------- | --------------------------------------------------------------------------------------- |
+| `npx tsc --noEmit`                    | ✅ pass, exit 0                                                                         |
+| `npx eslint .`                        | ✅ pass, exit 0 (after fixing `no-html-link-for-pages`, `no-console`)                   |
+| `npx prettier --check <scoped paths>` | ✅ pass (docs excluded; pre-existing docs use other wrapping)                           |
+| `npx vitest run`                      | ✅ 3 files passed, 7 tests passed, 1 skipped (`db.integration` needs live DB)           |
+| `npm run build`                       | ✅ pass (added `"use client"` to `error.tsx`; routes `/`, `/_not-found`, `/api/health`) |
+| `dev` on :3100 + `GET /api/health`    | ✅ `/` 200; `/api/health` 503 `{"status":"degraded","db":"down"}` (correct: no DB here) |
+| `npm run db:migrate:status`           | ⚠️ fails closed as designed: `connect ECONNREFUSED 127.0.0.1:5432` (no Postgres here)   |
+| `docker compose up -d`                | ❌ Docker Desktop daemon not running (`npipe/...dockerDesktopLinuxEngine` missing)      |
+| `npx playwright test`                 | ⏭️ not run locally (no DB + browsers uninstalled); spec present for CI                  |
 
 ### M3-blockers (recorded, not fabricated)
 
@@ -232,25 +236,25 @@ PostgreSQL + Vercel, free-tier limits) with scope restricted to M3. M4/M5 NOT st
 
 ### M3 acceptance vs roadmap §7 (updated 2026-09-27)
 
-| Criterion | State |
-| --- | --- |
-| Fresh clone → running app via docs alone | ✅ app boots + health degrades cleanly; hosted DB path is primary (docs/SUPABASE.md §6), Docker fallback documented |
-| Production build succeeds | ✅ `npm run build` green (prior session; re-verify after these edits) |
-| Migration applies AND reverses | ⏳ code complete (idempotent `up`, guarded writes, reversal on disposable DBs in CI); `down` is now **loopback-only in code** (a ref-matched hosted target is refused before any connection opens, with no env bypass) and the journal row is deleted after a successful `down`; hosted `up` pending owner-run output — `down` NEVER on hosted |
-| Hosted rollback impossible from the CLI | ⏳ enforced in `migrateDown()` ahead of `withClient()`; asserted offline by `src/db/migrate.test.ts` (stubbed driver, zero connection attempts on refusal); owner-run proof is §6 of [`M3-VERIFICATION.md`](./M3-VERIFICATION.md) |
+| Criterion                                              | State                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| Fresh clone → running app via docs alone               | ✅ app boots + health degrades cleanly; hosted DB path is primary (docs/SUPABASE.md §6), Docker fallback documented                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Production build succeeds                              | ✅ `npm run build` green (prior session; re-verify after these edits)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| Migration applies AND reverses                         | ⏳ code complete (idempotent `up`, guarded writes, reversal on disposable DBs in CI); `down` is now **loopback-only in code** (a ref-matched hosted target is refused before any connection opens, with no env bypass) and the journal row is deleted after a successful `down`; hosted `up` pending owner-run output — `down` NEVER on hosted                                                                                                                                                                                                                |
+| Hosted rollback impossible from the CLI                | ⏳ enforced in `migrateDown()` ahead of `withClient()`; asserted offline by `src/db/migrate.test.ts` (stubbed driver, zero connection attempts on refusal); owner-run proof is §6 of [`M3-VERIFICATION.md`](./M3-VERIFICATION.md)                                                                                                                                                                                                                                                                                                                             |
 | Format gate (`npm run format`, CI step "Format check") | ⚠️ most likely RED at HEAD, independent of this session: `.prettierignore` lists config/build artifacts only (`.prettierrc.json`, `eslint.config.mjs`, `next-env.d.ts`, `.next`, `out`, `coverage`, `playwright-report`, `test-results`) and no `*.md` pattern, while the tables in `README.md`/`docs/*.md` are not in Prettier's aligned form. Remedy is one `npx prettier --write .`. Inferred from the file contents and Prettier's documented table alignment — **not executed** (shell unavailable); see [`M3-VERIFICATION.md`](./M3-VERIFICATION.md) §3 |
-| CI fails on type/lint/test errors | ✅ workflow wired on disposable Postgres (no Supabase secrets); re-verify green after this change |
-| `.env` ignored, no secrets committed | ✅ verified (only `.env.example` tracked; new code prints hostnames only) |
-| Clear error on missing env | ✅ asserted in tests; CLI errors now on `console.error` + exit 1 even when `LOG_LEVEL=warn` |
-| Status/inspect always print | ✅ fixed 2026-09-27: stdout `migration 0001: applied|pending`, `db:inspect` identity lines; root cause was `logger.info` filtered by `LOG_LEVEL=warn` |
-| No phantom `drizzle/` dir | ✅ by design: custom runner in `src/db/migrations.ts`; `drizzle.config.ts` is future codegen config only |
+| CI fails on type/lint/test errors                      | ✅ workflow wired on disposable Postgres (no Supabase secrets); re-verify green after this change                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `.env` ignored, no secrets committed                   | ✅ verified (only `.env.example` tracked; new code prints hostnames only)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| Clear error on missing env                             | ✅ asserted in tests; CLI errors now on `console.error` + exit 1 even when `LOG_LEVEL=warn`                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| Status/inspect always print                            | ✅ fixed 2026-09-27: stdout `migration 0001: applied                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | pending`, `db:inspect`identity lines; root cause was`logger.info`filtered by`LOG_LEVEL=warn` |
+| No phantom `drizzle/` dir                              | ✅ by design: custom runner in `src/db/migrations.ts`; `drizzle.config.ts` is future codegen config only                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
 
 ### Code changes in this session (2026-09-27, uncommitted until verified)
 
 - `src/db/guard.ts` (+ `guard.test.ts`): write-target assertion — loopback or
   Supabase ref match; credential-redacting helpers.
   **Hardened later the same day (second session, shell still unavailable):**
-  `matchesSupabaseRef()` now enforces *exact* hostname `db.<ref>.supabase.co`
+  `matchesSupabaseRef()` now enforces _exact_ hostname `db.<ref>.supabase.co`
   or `*.pooler.supabase.com` + exactly `postgres.<ref>` decoded user (substring
   matching removed — `db.<ref>.supabase.co.evil.example.com` refused);
   `isLoopbackHost()` accepts `[::1]` as WHATWG URLs report it (exported);
@@ -264,7 +268,7 @@ PostgreSQL + Vercel, free-tier limits) with scope restricted to M3. M4/M5 NOT st
   **Hardened further in the latest session (shell still unavailable):**
   `migrateDown()` enforces a second, independent barrier — rollback is
   loopback-only via `isLoopbackHost(target.host)` after `assertWriteTarget()` and
-  throws *before* `withClient()` opens anything, so the ref-matched hosted target
+  throws _before_ `withClient()` opens anything, so the ref-matched hosted target
   that `up` must accept can never be rolled back from the CLI, and there is
   deliberately no environment-variable bypass. After a successful `down` the
   migration's `schema_migrations` row is deleted behind a
@@ -303,5 +307,105 @@ upload/storage, no M8–M11. No deploy, no paid service, no production migration
 
 ## M4+ — Product implementation
 
-**Status: NOT STARTED.** M3 foundation only. Next is M4 per roadmap §8 (tokens,
-primitives, shell, `/design` route) — do not start in this task.
+**Status: vertical slice built; `SG-3` demonstrated on a real database (2026-09-28).**
+`SG-5` and `SG-7` pass locally; `SG-4`, `SG-6` and the hosted half of `SG-5`/`SG-7` are
+open. Full evidence: [`SG3-VERIFICATION.md`](./SG3-VERIFICATION.md) and roadmap §22.
+
+### Verification actually performed (this machine, 2026-09-28)
+
+Executed against PostgreSQL 16.15 (`postgres:16-alpine` from `compose.yaml`, loopback only,
+database `edushare`). Nothing below is inferred from reading code.
+
+| Check                                  | Result                                                                                                                         |
+| -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Migrations `0001`–`0004` apply         | ✅ `migrate up: ok (host=127.0.0.1 via=DATABASE_URL)`                                                                          |
+| Idempotent re-apply                    | ✅ second run logs `migration already applied, skipping` ×4                                                                    |
+| Full reversal                          | ✅ `db:migrate:down` reverses 0004→0001; `pg_tables` in `public` → 0 rows                                                      |
+| Re-apply after reversal                | ✅ 10 policies, RLS on 5 tables, `profiles_guard_privilege_columns` trigger, 3 identity functions — all back                   |
+| Hosted-rollback barrier                | ✅ `migrate.test.ts` (6) — `down` refuses a ref-matched hosted target before any socket opens                                  |
+| RLS matrix                             | ✅ 28 cases on a `NOSUPERUSER NOBYPASSRLS` role (anonymous / owner / other user / privilege columns / identity bridge)         |
+| Resource lifecycle                     | ✅ 16 cases through the real service functions and `withIdentity()`                                                            |
+| Storage lifecycle                      | ✅ 15 route cases on the local provider, all three compensating-delete paths; **0 orphan objects, 0 leftover rows** afterwards |
+| Auth flow                              | ✅ 17 cases at the provider/cookie boundary; hosted Supabase exchange still unproven                                           |
+| `tsc --noEmit` / `eslint` / `prettier` | ✅ 0 / 0 errors 0 warnings / clean                                                                                             |
+| `vitest run` (`RUN_DB_TESTS=1`)        | ✅ **247 passed, 19 files** (226 at the SG-3 checkpoint, +21 new)                                                              |
+| `next build`                           | ✅ "Compiled successfully in 53s", 18 pages                                                                                    |
+
+### Continued session (same date) — browser suite expansion
+
+The two-test smoke suite was replaced by real journey coverage. `npm run test:e2e`
+now runs **33 tests, 33 passed, 0 failed, 0 skipped** against Google Chrome
+(`PLAYWRIGHT_BROWSER_CHANNEL=chrome`, because the pinned build cannot be extracted on
+this host — environment, not product). The suite leaves **0 rows and 0 storage
+objects** behind, enforced by `e2e/global-setup.ts`.
+
+It found four product defects, one harness defect and one configuration hazard —
+`D7`–`D12`, recorded in [`SG3-VERIFICATION.md`](./SG3-VERIFICATION.md) §12 with their
+outcomes. The most serious, `D7`, was an origin check that rejected every legitimate
+state-changing request; it is now fixed and covered by 15 unit tests.
+
+> **Owner action:** the local `.env` was overwritten during this session by an
+> ad-hoc diagnostic command, and `NEXT_PUBLIC_SUPABASE_URL` /
+> `NEXT_PUBLIC_SUPABASE_ANON_KEY` were lost. Nothing was leaked or committed, no
+> other key was affected, and the file is valid for local work — but both values
+> must be re-entered. Full record in [`SG3-VERIFICATION.md`](./SG3-VERIFICATION.md)
+> §13. The unsafe path is now closed: `npm run test:e2e` renames `.env` aside and
+> always restores it.
+
+### Defects found and fixed by this run
+
+| ID  | Class              | Finding                                                                                                                                                                  | Fix                                                                                                                                                                                                                              |
+| --- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Security (AUD-002) | `profiles_update_self` scoped rows, never columns: a role with table `UPDATE` could run `UPDATE profiles SET role='admin' WHERE id = <self>`                             | Migration `0004` — `BEFORE UPDATE` trigger refusing non-privileged edits to `role`/`auth_user_id` (42501). A trigger, not column privileges, because privileges are additive and cannot be revoked from a role granted the table |
+| D2  | Test harness       | DB suites raced; `route.integration.test.ts` renames the live `resources` table to force a DB failure, so a concurrent suite hit `42P01` and failed — two false failures | `vitest.config.ts`: `fileParallelism: process.env.RUN_DB_TESTS !== "1"`; reproduced before, 4/4 clean after                                                                                                                      |
+| D3  | Source hygiene     | `safeDisplayName()` held raw NUL/`0x1F`/`0x7F` bytes inside a regex literal, behind an eslint-disable for a rule this config does not enable (the run's only warning)    | Rewritten as `/[\u0000-\u001f\u007f]/g`; 0 control bytes remain, 32/32 validation tests pass, `eslint` silent                                                                                                                    |
+| D4  | Docs               | No `db:rollback` script exists — rollback is `npm run db:migrate:down`                                                                                                   | Recorded                                                                                                                                                                                                                         |
+
+### Deliberately not done
+
+Hosted Supabase (including migration `0003`'s `anon`/`authenticated` grant branch, which
+only fires where those roles exist), Supabase Storage signed URLs against a real bucket, and
+the hosted Supabase Auth exchange. `SG-4` and `SG-6` remain open gates. No deploy, no paid
+service, no production migration.
+
+---
+
+## M5 — EDU-SHARE 2.0 Presentation Layer & Core Workflows Rebuild
+
+**Status: COMPLETE & VERIFIED** (2026-10-03)
+
+Full design and presentation layer rebuild across all public, authenticated, contributor, and informational flows, backed by verified database migrations 0005–0007.
+
+### What Was Built
+
+- **Design System & Shell**: Design tokens (`tokens.css`), responsive shell, mobile drawer with focus trap, theme toggle (system/light/dark), brand logo, accessible footer with creator credit (`Built by Chirayu Babu Jaysawal`, GitHub, Portfolio, Blog with `rel="noopener noreferrer"`).
+- **Core Screens**: Home (`/`), Browse with filters (`/browse`), Resource detail (`/resources/[id]`), Upload wizard (`/upload`), Contributor dashboard (`/manage`), Bookmarks (`/saved`), User profile (`/profile`), Auth (`/auth`), Legal & Help (`/about`, `/help`, `/terms`, `/privacy`, `/acceptable-use`), 404 (`not-found.tsx`), and error boundaries.
+- **Database & Security**:
+  - Migrations 0005–0007 applied and verified with reversible `down()` steps and data preservation tests.
+  - Migration 0006: Atomic `increment_resource_download_count()` RPC function preserving tight resource UPDATE policy.
+  - Migration 0007: `resource_reports` table with strict insert-as-self and select-own RLS policies.
+- **Visual QA**: 36 screenshots captured across 9 key routes in 390px and 1440px viewports (Light & Dark); 0 horizontal overflow and 1 `h1` per page verified.
+
+### What Was NOT Built (Deliberately Deferred)
+
+- Dedicated admin moderation panel (database reports exist, moderation UI deferred).
+- Batch/bulk resource uploads.
+- Threaded resource discussion / comments.
+- Hosted third-party OAuth providers (Google / GitHub).
+- Cloud production deployments.
+
+### Known Limitations
+
+- Standalone Playwright Chromium on Windows host requires `PLAYWRIGHT_BROWSER_CHANNEL=chrome`.
+- Storage provider defaults to local filesystem driver when Supabase S3 keys are absent.
+- Local Postgres container on `127.0.0.1:5432` requires Docker Desktop backend process active.
+
+### Final Verification Results
+
+- **`tsc --noEmit`**: 0 errors
+- **`eslint`**: 0 errors, 0 warnings
+- **`prettier`**: Clean
+- **`test` (unit)**: 234 passed (66 DB tests skipped)
+- **`test:db` (integration)**: 300 passed across 22 test files, 0 failed
+- **`build`**: 28 routes compiled successfully, 0 errors, 0 warnings
+- **`test:e2e`**: 33 passed, 0 failed, 0 skipped
