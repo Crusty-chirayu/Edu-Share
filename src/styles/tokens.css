@@ -1,0 +1,180 @@
+@layer tokens {
+  :root {
+    /* ------------------------------------------------------------------ *
+     * LIGHT THEME: Sunlit Modern University Library
+     * ------------------------------------------------------------------ */
+    --c-canvas: hsl(210 25% 97.5%);
+    --c-surface: #ffffff;
+    --c-surface-raised: #ffffff;
+    --c-surface-sunken: hsl(214 28% 94%);
+    --c-border: hsl(214 22% 88%);
+    --c-border-strong: hsl(214 18% 76%);
+
+    --c-ink: hsl(222 47% 11%);
+    --c-ink-2: hsl(220 18% 32%);
+    --c-ink-3: hsl(220 12% 44%);
+
+    /* Oxford Cobalt & Electric Cerulean */
+    --c-brand: hsl(224 64% 33%);
+    --c-brand-hover: hsl(224 64% 26%);
+    --c-brand-active: hsl(224 64% 20%);
+    --c-brand-tint: hsl(224 90% 96%);
+
+    --c-secondary: hsl(208 100% 40%);
+    --c-secondary-hover: hsl(208 100% 34%);
+    --c-secondary-tint: hsl(208 90% 95%);
+
+    /* Academic Amber Node */
+    --c-accent: hsl(38 95% 48%);
+    --c-accent-hover: hsl(38 95% 42%);
+    --c-accent-ink: hsl(30 100% 12%);
+    --c-accent-tint: hsl(38 100% 95%);
+
+    /* Semantics */
+    --c-success: hsl(152 60% 26%);
+    --c-success-tint: hsl(152 50% 94%);
+    --c-warning: hsl(32 90% 30%);
+    --c-warning-tint: hsl(32 80% 94%);
+    --c-danger: hsl(2 70% 42%);
+    --c-danger-hover: hsl(2 70% 35%);
+    --c-danger-tint: hsl(2 80% 95%);
+    --c-info: hsl(208 85% 34%);
+    --c-info-tint: hsl(208 80% 95%);
+    --c-focus: hsl(208 100% 45%);
+
+    /* Format Categorisation */
+    --c-fmt-pdf: hsl(2 72% 45%);
+    --c-fmt-pdf-bg: hsl(2 80% 96%);
+    --c-fmt-doc: hsl(215 78% 44%);
+    --c-fmt-doc-bg: hsl(215 80% 96%);
+    --c-fmt-slides: hsl(35 90% 42%);
+    --c-fmt-slides-bg: hsl(35 90% 95%);
+    --c-fmt-sheets: hsl(152 65% 28%);
+    --c-fmt-sheets-bg: hsl(152 60% 95%);
+    --c-fmt-archive: hsl(270 45% 40%);
+    --c-fmt-archive-bg: hsl(270 50% 96%);
+
+    /* Typography */
+    --font-display: var(--font-jakarta, "Plus Jakarta Sans", -apple-system, sans-serif);
+    --font-body: var(--font-inter, "Inter", -apple-system, sans-serif);
+    --font-mono: var(--font-jetbrains, "JetBrains Mono", ui-monospace, monospace);
+
+    --fs-display: clamp(2.25rem, 3.5vw + 1rem, 3.5rem);
+    --fs-h1: clamp(1.75rem, 2.2vw + 0.8rem, 2.35rem);
+    --fs-h2: clamp(1.3rem, 1.6vw + 0.6rem, 1.75rem);
+    --fs-h3: clamp(1.05rem, 1vw + 0.5rem, 1.25rem);
+    --fs-body: 1rem;
+    --fs-body-sm: 0.875rem;
+    --fs-meta: 0.775rem;
+    --fs-label: 0.8125rem;
+    --fs-code: 0.8125rem;
+
+    /* Spacing: 4px base */
+    --space-0-5: 2px;
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+    --space-16: 64px;
+    --space-20: 80px;
+
+    /* Radii */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+    --radius-pill: 9999px;
+
+    /* Elevation & Shadows (Layered soft shadows) */
+    --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.05);
+    --shadow-card: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+    --shadow-floating:
+      0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -2px rgba(15, 23, 42, 0.05);
+    --shadow-modal: 0 24px 48px -8px rgba(15, 23, 42, 0.18), 0 8px 16px -4px rgba(15, 23, 42, 0.08);
+
+    /* Glass tokens */
+    --glass-bg: rgba(255, 255, 255, 0.82);
+    --glass-border: rgba(214, 222, 232, 0.7);
+
+    /* Transitions & Motion */
+    --dur-instant: 90ms;
+    --dur-fast: 150ms;
+    --dur-std: 240ms;
+    --dur-slow: 400ms;
+    --ease-std: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * DARK THEME: Calibrated High-Contrast Scholarly Atmosphere
+   * ------------------------------------------------------------------ */
+  [data-theme="dark"] {
+    --c-canvas: hsl(224 28% 8%);
+    --c-surface: hsl(224 24% 12%);
+    --c-surface-raised: hsl(224 22% 16%);
+    --c-surface-sunken: hsl(224 30% 6%);
+    --c-border: hsl(224 16% 22%);
+    --c-border-strong: hsl(224 16% 32%);
+
+    --c-ink: hsl(220 25% 94%);
+    --c-ink-2: hsl(220 18% 74%);
+    --c-ink-3: hsl(220 12% 58%);
+
+    --c-brand: hsl(215 90% 68%);
+    --c-brand-hover: hsl(215 90% 76%);
+    --c-brand-active: hsl(215 90% 82%);
+    --c-brand-tint: hsl(224 50% 16%);
+
+    --c-secondary: hsl(205 95% 65%);
+    --c-secondary-hover: hsl(205 95% 72%);
+    --c-secondary-tint: hsl(205 50% 16%);
+
+    --c-accent: hsl(38 92% 52%);
+    --c-accent-hover: hsl(38 92% 58%);
+    --c-accent-ink: hsl(30 100% 10%);
+    --c-accent-tint: hsl(38 60% 16%);
+
+    --c-success: hsl(152 60% 48%);
+    --c-success-tint: hsl(152 50% 14%);
+    --c-warning: hsl(34 90% 55%);
+    --c-warning-tint: hsl(34 70% 15%);
+    --c-danger: hsl(2 85% 64%);
+    --c-danger-hover: hsl(2 85% 70%);
+    --c-danger-tint: hsl(2 60% 16%);
+    --c-info: hsl(205 90% 65%);
+    --c-info-tint: hsl(205 60% 16%);
+    --c-focus: hsl(208 100% 60%);
+
+    --c-fmt-pdf: hsl(2 85% 68%);
+    --c-fmt-pdf-bg: hsl(2 40% 16%);
+    --c-fmt-doc: hsl(212 90% 70%);
+    --c-fmt-doc-bg: hsl(212 40% 16%);
+    --c-fmt-slides: hsl(38 92% 62%);
+    --c-fmt-slides-bg: hsl(38 40% 16%);
+    --c-fmt-sheets: hsl(152 65% 58%);
+    --c-fmt-sheets-bg: hsl(152 40% 15%);
+    --c-fmt-archive: hsl(270 65% 72%);
+    --c-fmt-archive-bg: hsl(270 40% 17%);
+
+    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.4);
+    --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.45), 0 0 0 1px hsl(224 16% 22%);
+    --shadow-floating: 0 12px 32px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px hsl(224 16% 26%);
+    --shadow-modal: 0 24px 60px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px hsl(224 18% 30%);
+
+    --glass-bg: rgba(23, 28, 38, 0.85);
+    --glass-border: rgba(45, 55, 72, 0.7);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --dur-instant: 0.01ms;
+      --dur-fast: 0.01ms;
+      --dur-std: 0.01ms;
+      --dur-slow: 0.01ms;
+    }
+  }
+}
