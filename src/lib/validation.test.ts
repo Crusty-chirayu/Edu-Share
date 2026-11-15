@@ -12,6 +12,10 @@ import {
   resourceUpdateSchema,
   safeDisplayName,
   searchParamsSchema,
+  moderationDecisionSchema,
+  institutionCreateSchema,
+  subjectCreateSchema,
+  subjectUpdateSchema,
 } from "@/lib/validation";
 
 const PDF = {
@@ -228,5 +232,47 @@ describe("error exposure", () => {
     expect(status).toBe(500);
     expect(JSON.stringify(body)).not.toContain("pw@");
     expect(body.error.message).not.toContain("boom");
+  });
+});
+
+describe("moderationDecisionSchema", () => {
+  it("accepts valid moderation decisions", () => {
+    const valid = moderationDecisionSchema.parse({
+      action: "hide",
+      reason: "Confirmed copyright violation reported by publisher",
+    });
+    expect(valid.action).toBe("hide");
+    expect(valid.reason).toContain("copyright");
+  });
+
+  it("rejects unknown actions or short reasons", () => {
+    expect(() => moderationDecisionSchema.parse({ action: "nuke", reason: "bad" })).toThrow();
+    expect(() => moderationDecisionSchema.parse({ action: "dismiss", reason: " " })).toThrow();
+  });
+});
+
+describe("taxonomy schemas", () => {
+  it("validates institution creation", () => {
+    const inst = institutionCreateSchema.parse({ name: "MIT" });
+    expect(inst.name).toBe("MIT");
+    expect(() => institutionCreateSchema.parse({ name: " " })).toThrow();
+  });
+
+  it("validates subject creation and updates", () => {
+    const subject = subjectCreateSchema.parse({
+      institutionId: ID,
+      name: "Calculus I",
+      code: "MATH 101",
+      semester: 1,
+    });
+    expect(subject.name).toBe("Calculus I");
+    expect(subject.semester).toBe(1);
+
+    const update = subjectUpdateSchema.parse({
+      name: "Calculus II",
+      code: "",
+    });
+    expect(update.name).toBe("Calculus II");
+    expect(update.code).toBeNull();
   });
 });

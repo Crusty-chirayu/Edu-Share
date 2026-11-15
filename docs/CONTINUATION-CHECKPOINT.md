@@ -220,39 +220,49 @@ Ordered next actions:
 3. If reuse of the inherited code is ever wanted, obtain **written permission** first and
    record it in a third-party notices file.
 
-## Current product state — 2026-09-30 (later session, supersedes nothing above)
+## Current product state — 2026-11-15 (supersedes historical notes)
 
 Everything recorded above remains the milestone history. This block states where the
 code actually stands now, for a session that starts cold.
 
-| Item                  | State                                                                                                                                                    |
-| --------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Milestone             | `SG-3` accepted (`docs/SG3-VERIFICATION.md` §14). Product-surface phase 1 delivered, not yet committed                                                   |
-| Working tree          | **Dirty and uncommitted.** Nothing has been committed or pushed by these sessions; `git --no-pager status -sb` is the source of truth                    |
-| Unit + integration    | `npm run test:db` → **288 tests / 22 files**, 0 failed, 0 skipped. Requires local PostgreSQL (`docker compose up -d db`)                                 |
-| Browser suite         | `npm run test:e2e` → **33 tests / 4 spec files**. Starts its own dev server; leave port 3000 free                                                        |
-| Browser engine        | Playwright's own Chromium build went missing from the local cache mid-session; the documented escape hatch is `$env:PLAYWRIGHT_BROWSER_CHANNEL='chrome'` |
-| Types / lint / format | `npx tsc --noEmit`, `npx eslint .`, `npx prettier --check .` all clean                                                                                   |
-| Build                 | `npm run build` → 23 routes emitted                                                                                                                      |
-| Open owner action     | §13 of `docs/SG3-VERIFICATION.md`: the two Supabase values still need re-entering in `.env`                                                              |
+| Item                  | State                                                                                                                                                                                                                                                                        |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Milestone             | **M9 (Content Moderation), M6 (Taxonomy Admin), & 2.0 Design Transformation COMPLETE & VERIFIED.**                                                                                                                                                                           |
+| Working tree          | Local branch `feat/edu-share-2-0`. Clean safety baseline checkpoint saved at `checkpoint/pre-transformation-baseline`. Uncommitted working tree ready for review.                                                                                                            |
+| Unit tests            | `npm run test` → **246 tests passed across 18 test files** (66 DB tests skipped offline), 0 failed.                                                                                                                                                                          |
+| Live DB tests         | `npm run test:db` → **312 tests passed across 22 test files (100%)**, 0 failed. All 8 migrations verified with active RLS enforcement.                                                                                                                                       |
+| Types / lint / format | `npm run typecheck`, `npm run lint`, `npm run format` all **100% clean (0 errors, 0 warnings)**.                                                                                                                                                                             |
+| Build                 | `npm run build` → **36 routes emitted and optimized successfully** (including new admin moderation, taxonomy, and audit routes). Shared first-load JS ~102 kB.                                                                                                               |
+| Design System         | Modern SaaS design system deployed: `#2E5BFF` accent, `#FFFFFF` canvas, `#F7F6F6` sunken surface, Host Grotesk & IBM Plex Mono typography, pill buttons (`radius: 9999px`), flat cards (`radius: 8px`), refined obsidian dark mode, interactive product showcase on landing. |
+| Runtime Integrity     | **Resolved `Cannot read properties of undefined (reading 'call')`**. Converted `icon.tsx` GLYPHS map into lazy functional renderers `() => React.ReactNode`, preventing top-level JSX evaluation during module import in client components.                                  |
 
-### What the last session added (UI/UX phase 1)
+### What this session delivered
 
-- Content surface: `/about`, `/help`, `/terms`, `/privacy`, `/acceptable-use`, plus
-  `src/components/policy-shell.tsx` and `requirePolicy()` in `src/lib/site.ts`.
-- Landing page rebuild, footer link groups with creator attribution, `site-header` account
-  block and monogram.
-- Loading skeletons for `/browse` and `/saved`; rewritten `not-found`, `error` and a new
-  `global-error`.
-- **`src/app/manage/loading.tsx` was created and then deliberately deleted.** A route-level
-  `loading.tsx` wraps `/manage/[id]` too, and its `notFound()` then arrived as a 200. Do not
-  reintroduce it; see `docs/UI-UX-DESIGN-SYSTEM.md` §19.4.1.
+1. **M9 Content Moderation System**:
+   - Migration 0008 adding `resolution_note`, `resolved_at`, `resolved_by` to `resource_reports`, creating `moderation_actions` audit table with strict RLS.
+   - Admin moderation dashboard at `/admin/moderation` with queue filtering, action modals, and instant resolution.
+   - Protected API routes: `/api/admin/reports`, `/api/admin/reports/[id]`, `/api/admin/moderation/audit`.
+2. **M6 Taxonomy Administration System**:
+   - Two-pane management interface at `/admin/taxonomy` for institutions and subjects.
+   - Safe deletion preventing subject removal when active resources are linked.
+   - Protected API routes: `/api/admin/taxonomy/institutions`, `/api/admin/taxonomy/subjects`.
+3. **Full Platform UI Transformation**:
+   - Host Grotesk loaded via `next/font/google` for clean display/body type.
+   - Transformed landing page (`/`) with live product showcase, verified dynamic platform statistics, academic workflows, and FAQ.
+   - Updated `/browse`, `/resources/[id]`, `/upload`, `/manage`, `/saved`, `/profile`, `/auth` to flat surfaces, pill controls, and high-contrast accessible states.
+   - Role-gated admin navigation in site header and footer.
+4. **Runtime Stability & Architectural Hardening**:
+   - Fixed module-evaluation JSX runtime crash in `src/components/icon.tsx`.
+   - Verified clean zero-error browser rendering across all routes.
+5. **Git & Repository Hygiene**:
+   - Strict `.gitignore` excluding AI prompts, scratch files, and agent session artifacts.
+   - Verified that no secrets or private keys are staged or tracked.
 
-### Suggested next steps, in order
+### Release & Next Actions
 
-1. Commit the working tree in reviewable chunks (the tree has been dirty across sessions).
-2. UI/UX phase 2: `browse` page and `resource-card` against the design system §12.
-3. The `SG-4` items still open: the `/design` route and a no-hardcoded-colour lint rule.
+1. Review working tree diff (`git diff --stat`).
+2. Commit changes with clean atomic commit messages upon user authorization.
+3. Apply migration 0008 to production/hosted Supabase database when ready.
 
 ## Quick verification commands
 

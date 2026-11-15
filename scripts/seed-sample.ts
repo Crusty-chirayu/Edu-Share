@@ -1,4 +1,8 @@
-import "dotenv/config";
+import path from "node:path";
+import dotenv from "dotenv";
+
+dotenv.config({ path: path.resolve(process.cwd(), ".env") });
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
 import { getSql } from "../src/db/client";
 
 const INSTITUTION_ID = "10000000-0000-4000-8000-000000000001";
@@ -58,6 +62,20 @@ async function main() {
         resource_type = EXCLUDED.resource_type,
         visibility = EXCLUDED.visibility,
         download_count = EXCLUDED.download_count
+    `;
+
+    // Seed admin profile and sample moderation report
+    const ADMIN_ID = "30000000-0000-4000-8000-000000000002";
+    const REPORT_ID = "50000000-0000-4000-8000-000000000001";
+    await tx`
+      INSERT INTO profiles (id, display_name, email, role)
+      VALUES (${ADMIN_ID}, 'Lead Governance Admin', 'admin@edushare.invalid', 'admin')
+      ON CONFLICT (id) DO NOTHING
+    `;
+    await tx`
+      INSERT INTO resource_reports (id, resource_id, reporter_id, category, details, status)
+      VALUES (${REPORT_ID}, ${RESOURCE_ID}, ${USER_ID}, 'spam', 'Suspected repetitive promotional upload', 'open')
+      ON CONFLICT (id) DO NOTHING
     `;
   });
 

@@ -1,13 +1,7 @@
 # EDU-SHARE
 
-> **Status: M3 foundation complete; an M4–M8 vertical slice is built and partially
-> verified.** The application ships a real product surface — browse, detail, upload,
-> manage, saved, accounts — and the security boundaries are enforced in code.
-> **No milestone stage gate below `SG-3` is demonstrated**, because no PostgreSQL or
-> Docker was reachable in the session that built this: migrations `0002`/`0003` have
-> never been applied and no RLS policy has ever executed. See
-> [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md) §22 for
-> exactly what is verified and what is not.
+> **Status: 2.0 Transformation, M9 Moderation, and M6 Taxonomy Administration Complete & Verified.** The platform features a refined design system (Modern Blue `#2E5BFF`, Host Grotesk typography, pill controls, flat surfaces), full public and authenticated user journeys, comprehensive administrative moderation and taxonomy management, and database-level security with Row Level Security (RLS) across 8 migrations.
+> **All 312 database integration tests, unit tests, static analysis, and production build pass.**
 
 EDU-SHARE is an independent, full-stack EdTech platform for academic resource
 discovery and sharing — connecting students and teachers across institutions to
@@ -22,39 +16,30 @@ present.
 
 ## Repository identity
 
-| Item           | Value                                             |
-| -------------- | ------------------------------------------------- |
-| Remote         | `https://github.com/Crusty-chirayu/Edu-Share.git` |
-| Visibility     | **Private**                                       |
-| Default branch | `main`                                            |
-| License        | MIT — see [`LICENSE`](./LICENSE)                  |
+| Item           | Value                                                |
+| -------------- | ---------------------------------------------------- |
+| Remote         | `https://github.com/Crusty-chirayu/Edu-Share.git`    |
+| Visibility     | **Private**                                          |
+| Default branch | `main` (active feature branch: `feat/edu-share-2-0`) |
+| License        | MIT — see [`LICENSE`](./LICENSE)                     |
 
 ---
 
 ## Development status
 
-| Area                                                                           | Status                                                                                                                                                                                                                                                |
-| ------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Repository & documentation                                                     | ✅ Initialized                                                                                                                                                                                                                                        |
-| Technical audit of the inherited system                                        | ✅ Complete — [`docs/PROJECT-AUDIT.md`](./docs/PROJECT-AUDIT.md)                                                                                                                                                                                      |
-| Product requirements                                                           | ✅ Complete — [`docs/PRODUCT-REQUIREMENTS.md`](./docs/PRODUCT-REQUIREMENTS.md)                                                                                                                                                                        |
-| Architecture proposal                                                          | ✅ Complete — [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md)                                                                                                                                                                      |
-| UI/UX design system                                                            | ✅ Complete — [`docs/UI-UX-DESIGN-SYSTEM.md`](./docs/UI-UX-DESIGN-SYSTEM.md)                                                                                                                                                                          |
-| Implementation roadmap                                                         | ✅ Complete — [`docs/IMPLEMENTATION-ROADMAP.md`](./docs/IMPLEMENTATION-ROADMAP.md)                                                                                                                                                                    |
-| Owner decision brief                                                           | ✅ Complete — [`docs/DECISION-BRIEF.md`](./docs/DECISION-BRIEF.md)                                                                                                                                                                                    |
-| M2 approval (Option A + Supabase + Vercel)                                     | ✅ Granted — scope: M3 foundation only                                                                                                                                                                                                                |
-| M3 foundation code                                                             | ✅ Implemented (see [`docs/DEVELOPMENT-STATUS.md`](./docs/DEVELOPMENT-STATUS.md) §M3)                                                                                                                                                                 |
-| M3 hosted DB verification (`uqcmcurhohbdnxzpdpei`)                             | ⏳ In progress — run [`docs/SUPABASE.md`](./docs/SUPABASE.md) §6, paste outputs                                                                                                                                                                       |
-| M4–M8 vertical slice (tokens, shell, sessions, storage, browse, upload, saved) | 🔄 Implemented; **unverified against a database** — see [roadmap §22](./docs/IMPLEMENTATION-ROADMAP.md#22-m4m8-vertical-slice--implementation-log-and-verification-status)                                                                            |
-| Tests / CI                                                                     | ✅ Wired — [`.github/workflows/ci.yml`](./.github/workflows/ci.yml), disposable Postgres service, no Supabase secrets. 247 unit + integration tests and 33 browser tests, both green locally; the Postgres integration suites skip without a database |
-| Deployment                                                                     | ⬜ Not started (M11)                                                                                                                                                                                                                                  |
+| Area                                                           | Status                                                                                                                                                            |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository & documentation                                     | ✅ Initialized & audited — [`docs/PROJECT-AUDIT.md`](./docs/PROJECT-AUDIT.md)                                                                                     |
+| Product requirements & architecture                            | ✅ Complete — [`docs/PRODUCT-REQUIREMENTS.md`](./docs/PRODUCT-REQUIREMENTS.md), [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md)                |
+| UI/UX Design System 2.0                                        | ✅ Complete — Modern Blue `#2E5BFF`, Host Grotesk & IBM Plex Mono, pill controls, flat cards, high-contrast dark mode                                             |
+| M3 Foundation & Database                                       | ✅ Complete — 8 migrations (`0001`–`0008`) applied, PostgreSQL 16 schema, custom transaction runner                                                               |
+| M4–M8 Vertical Slice (browse, upload, manage, saved, accounts) | ✅ Implemented & verified against live PostgreSQL (`src/db/rls.integration.test.ts`, `src/db/resource-service.integration.test.ts`)                               |
+| M9 Content Moderation System                                   | ✅ Implemented & verified — Report queue, moderation actions, resolution audit log, admin RLS policies                                                            |
+| M6 Taxonomy Administration                                     | ✅ Implemented & verified — Institution and subject lifecycle management, safe deletion guards                                                                    |
+| Tests / Verification                                           | ✅ **312 live database tests pass (100%)**, 246 unit tests pass, TypeScript, ESLint, Prettier clean, production build succeeds (36 routes)                        |
+| Deployment Readiness                                           | 🔄 Local container & dev environment verified; production deployment requires hosted bucket and production secrets (see [`docs/SUPABASE.md`](./docs/SUPABASE.md)) |
 
-**What exists today:** a working library — browse with server-side search and
-filters, resource detail, upload with server-side type/size/content validation,
-owner-only edit and delete, a private saved list, and email/password accounts with
-a local development identity adapter. **What is _not_ proven:** the database has
-never run these migrations, so no RLS policy has executed and no file has been
-stored.
+**What exists today:** a complete academic resource platform — landing page with real product showcase and dynamic platform metrics, browse with server-side search and faceted filters, resource detail with academic context and download counting, upload with MIME validation and byte-level storage, owner edit and delete, private bookmarking, account profile management, administrative content moderation (`/admin/moderation`), and university/subject taxonomy management (`/admin/taxonomy`).
 
 ### Inherited code status
 
@@ -67,36 +52,32 @@ original machine only, unmodified.
 
 ---
 
-## Technology stack (M3 — adopted)
+## Technology stack
 
-Next.js 15.5.2 App Router + React 19.1.1 + strict TypeScript 5.9.2, Zod env
-validation, PostgreSQL 16 (local Docker; Supabase path in
-[`docs/SUPABASE.md`](./docs/SUPABASE.md)), Drizzle ORM + postgres.js,
-Vitest + Playwright, ESLint flat + Prettier, GitHub Actions CI.
-Exact versions are pinned in `package.json` with a committed lockfile.
-Full specification and trade-offs: [`docs/ARCHITECTURE-PROPOSAL.md`](./docs/ARCHITECTURE-PROPOSAL.md).
-
-For reference, the _inherited_ system used PHP 8, MySQL/MariaDB, Tailwind CSS (via the
-CDN play script), and Font Awesome. Those are facts about the inherited code, not a
-decision about this project.
+- **Framework:** Next.js 15.5.2 App Router + React 19.1.1
+- **Language:** TypeScript 5.9.2 (strict mode)
+- **Database:** PostgreSQL 16 + Drizzle ORM + postgres.js driver
+- **Security:** PostgreSQL Row Level Security (RLS), security headers, CSRF-hardened mutations, input validation via Zod 3.23.8
+- **Typography:** Host Grotesk (`next/font/google`) + IBM Plex Mono
+- **Testing:** Vitest 3.2.4 (unit & integration), Playwright 1.55.0 (E2E)
+- **Linting & Formatting:** ESLint 9.35.0 (flat config) + Prettier 3.6.2
+- **Containerization:** Docker Compose PostgreSQL 16 service (`compose.yaml`)
 
 ---
 
 ## Local setup
 
-Prerequisites: Node 20–24, npm 11. Docker Desktop only for the local-Postgres
-fallback — the primary path is hosted Supabase (see
-[`docs/SUPABASE.md`](./docs/SUPABASE.md) §3 and §6).
+Prerequisites: Node 20–24, npm 11, Docker Desktop (or local PostgreSQL 16 service).
 
 ```powershell
 Set-Location E:\projects\edu-share-platform
-Copy-Item .env.example .env   # git-ignored; defaults already target local Docker
+Copy-Item .env.example .env   # git-ignored; defaults target local PostgreSQL
 npm ci
-npm run db:inspect            # read-only: identity + foundation-table state
-npm run db:migrate:status     # read-only: prints `migration 0003: applied|pending`
-npm run db:migrate            # guarded write: applies 0001 + 0002 + 0003
-npm run db:seed               # bounded probe write (5 rows max), after `up`
-npm run dev
+npm run db:inspect            # read-only: inspect connection and table state
+npm run db:migrate:status     # read-only: prints applied/pending migration status
+npm run db:migrate            # applies all pending migrations (0001–0008)
+npm run db:seed               # seeds baseline institutions and subjects
+npm run dev                   # starts Next.js development server on http://localhost:3000
 ```
 
 App: `http://localhost:3000`. Health: `GET /api/health` (200 with DB, 503

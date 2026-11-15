@@ -70,17 +70,16 @@ EDU-SHARE 2.0 is a complete rebuild of the presentation layer and frontend archi
 
 ## 6. Feature Status Table
 
-| Feature | Status | Verification Reference |
-|---|---|---|
-| PDF/image preview or honest unsupported panel | BUILT-AND-WORKING | `src/components/resource-preview.tsx` (PDF iframe, img preview, unsupported badge + direct download); verified in browser on `/resources/[id]` |
-| Report dialog + API | BUILT-AND-WORKING | `src/components/report-dialog.tsx` + `POST /api/resources/[id]/report`; verified in `rls.integration.test.ts` & `src/app/api/resources/[id]/report/route.integration.test.ts` |
-| Copy-link share | BUILT-AND-WORKING | `src/components/share-button.tsx` (Clipboard API with visual toast/state); verified in browser on `/resources/[id]` |
-| Mobile filter sheet | BUILT-AND-WORKING | `src/components/mobile-filter-drawer.tsx` & `.filter-drawer`; verified in `e2e/public-journeys.spec.ts` ("browse offers working filter controls") |
-| Resource-type filter | BUILT-AND-WORKING | `src/components/catalog-filters.tsx` (type pills reflecting in URL query params); verified in `e2e/public-journeys.spec.ts` & `src/lib/catalog.test.ts` |
-| Upload dropzone/progress/retry | BUILT-AND-WORKING | `src/components/upload-form.tsx` (file drag-and-drop, mime/size checks, progress meter, retry); verified in `e2e/resource-lifecycle.spec.ts` |
-| Download counter | BUILT-AND-WORKING | Migration 0006 `increment_resource_download_count()`; verified in `src/app/api/resources/[id]/download/route.integration.test.ts` & `src/db/migrations.test.ts` |
-| Delete confirm dialog | BUILT-AND-WORKING | `src/components/confirm-dialog.tsx` (accessible modal, ESC, cancel, destructive confirm); verified in `e2e/resource-lifecycle.spec.ts` |
-| Saved unsave | BUILT-AND-WORKING | `src/components/save-button.tsx` (optimistic toggle & `POST /api/bookmarks`); verified in `e2e/resource-lifecycle.spec.ts` |
-| Auth next-redirect sanitization | BUILT-AND-WORKING | `src/lib/auth/redirect.ts` (`sanitizeNextUrl`); verified in `e2e/auth-journey.spec.ts` ("an off-site ?next= is ignored" & "a protocol-relative ?next= is ignored") |
-| Theme zero-flash | BUILT-AND-WORKING | `src/app/layout.tsx` (inline synchronous `THEME_SCRIPT` setting `dataset.theme` before paint); verified in browser reload and `e2e/smoke.spec.ts` |
-
+| Feature                                       | Status            | Verification Reference                                                                                                                                                        |
+| --------------------------------------------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| PDF/image preview or honest unsupported panel | BUILT-AND-WORKING | `src/components/resource-preview.tsx` (PDF iframe, img preview, unsupported badge + direct download); verified in browser on `/resources/[id]`                                |
+| Report dialog + API                           | BUILT-AND-WORKING | `src/components/report-dialog.tsx` + `POST /api/resources/[id]/report`; verified in `rls.integration.test.ts` & `src/app/api/resources/[id]/report/route.integration.test.ts` |
+| Copy-link share                               | BUILT-AND-WORKING | `src/components/share-button.tsx` (Clipboard API with visual toast/state); verified in browser on `/resources/[id]`                                                           |
+| Mobile filter sheet                           | BUILT-AND-WORKING | `src/components/mobile-filter-drawer.tsx` & `.filter-drawer`; verified in `e2e/public-journeys.spec.ts` ("browse offers working filter controls")                             |
+| Resource-type filter                          | BUILT-AND-WORKING | `src/components/catalog-filters.tsx` (type pills reflecting in URL query params); verified in `e2e/public-journeys.spec.ts` & `src/lib/catalog.test.ts`                       |
+| Upload dropzone/progress/retry                | BUILT-AND-WORKING | `src/components/upload-form.tsx` (file drag-and-drop, mime/size checks, progress meter, retry); verified in `e2e/resource-lifecycle.spec.ts`                                  |
+| Download counter                              | BUILT-AND-WORKING | Migration 0006 `increment_resource_download_count()`; verified in `src/app/api/resources/[id]/download/route.integration.test.ts` & `src/db/migrations.test.ts`               |
+| Delete confirm dialog                         | BUILT-AND-WORKING | `src/components/confirm-dialog.tsx` (accessible modal, ESC, cancel, destructive confirm); verified in `e2e/resource-lifecycle.spec.ts`                                        |
+| Saved unsave                                  | BUILT-AND-WORKING | `src/components/save-button.tsx` (optimistic toggle & `POST /api/bookmarks`); verified in `e2e/resource-lifecycle.spec.ts`                                                    |
+| Auth next-redirect sanitization               | BUILT-AND-WORKING | `src/lib/auth/redirect.ts` (`sanitizeNextUrl`); verified in `e2e/auth-journey.spec.ts` ("an off-site ?next= is ignored" & "a protocol-relative ?next= is ignored")            |
+| Theme zero-flash                              | BUILT-AND-WORKING | `src/app/layout.tsx` (inline synchronous `THEME_SCRIPT` setting `dataset.theme` before paint); verified in browser reload and `e2e/smoke.spec.ts`                             |

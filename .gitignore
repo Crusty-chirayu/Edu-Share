@@ -111,6 +111,27 @@ $RECYCLE.BIN/
 *~
 nohup.out
 
+# ---------- AI Agent, Prompts & Temporary Session Artifacts ----------
+# Strict rule: NEVER commit prompts, instructions or private conversation dumps.
+prompts/
+*.prompt
+*.prompt.md
+*.prompt.txt
+prompt-*.md
+prompt-*.txt
+*.instructions.md
+*.instructions.txt
+agent-transcripts/
+brain/
+scratch/
+.system_generated/
+*.agent.md
+*.chat.json
+*.session.json
+.agent/
+.claude/
+.gemini/
+
 # ---------- IDE / editor (local state only) ----------
 .vscode/*
 !.vscode/extensions.json

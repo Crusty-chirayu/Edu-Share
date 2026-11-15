@@ -1,27 +1,21 @@
-import { IBM_Plex_Mono, IBM_Plex_Sans, Space_Grotesk } from "next/font/google";
+import { Host_Grotesk, IBM_Plex_Mono } from "next/font/google";
 
 /**
  * Typography.
  *
- * Three faces, all loaded through `next/font`, which downloads them at build
- * time and serves the `.woff2` from this origin: no request ever leaves the
- * reader's browser for a font, which is what the privacy notice promises and
- * what the previous stylesheet only pretended to do — it named three families
- * that no `@font-face` ever fetched, so the product silently rendered in the
- * system default.
+ * Loaded through `next/font`, which downloads at build time and serves `.woff2`
+ * from this origin: no request leaves the reader's browser for an external CDN.
  *
- *  - Display (Space Grotesk): the wordmark, headlines and figures. Geometric,
- *    slightly angular, and not a face any dashboard template ships with.
- *  - Body (IBM Plex Sans): a humanist face with an academic, institutional
- *    register. Chosen over the usual neutral grotesque on purpose.
+ *  - Display & Body (Host Grotesk): Modern, geometric, accessible grotesque
+ *    with strong typographic hierarchy across headings, UI controls, and prose.
+ *    Weights used: 400, 500, 600, 700.
  *  - Mono (IBM Plex Mono): formats, dates, sizes, identifiers and labels. It
- *    makes metadata read as a catalogue record rather than as decoration.
+ *    makes metadata read as an authoritative catalogue record.
  *
- * `display: "swap"` keeps text visible while a face loads, and the `variable`
- * names are the ones `globals.css` reads.
+ * `display: "swap"` keeps text visible while a face loads.
  */
 
-export const displayFont = Space_Grotesk({
+export const displayFont = Host_Grotesk({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   display: "swap",
@@ -29,7 +23,7 @@ export const displayFont = Space_Grotesk({
   preload: true,
 });
 
-export const bodyFont = IBM_Plex_Sans({
+export const bodyFont = Host_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600"],
   display: "swap",

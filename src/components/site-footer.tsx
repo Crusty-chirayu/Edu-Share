@@ -43,6 +43,8 @@ const LEARN = [
 ] as const;
 
 const DEVELOPERS = [
+  { href: "/admin/moderation", label: "Moderation queue", external: false },
+  { href: "/admin/taxonomy", label: "Academic taxonomy", external: false },
   { href: "/api/health", label: "Service health", external: false },
   { href: "https://github.com/Crusty-chirayu/Edu-Share", label: "Source code", external: true },
 ] as const;

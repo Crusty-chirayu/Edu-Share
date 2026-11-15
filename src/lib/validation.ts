@@ -237,6 +237,87 @@ export const reportCreateSchema = z.object({
 
 export type ReportCreateInput = z.infer<typeof reportCreateSchema>;
 
+/* ------------------------------------------------------------------ *
+ * M9 Moderation & Governance Schemas
+ * ------------------------------------------------------------------ */
+
+export const MODERATION_ACTIONS = ["dismiss", "hide", "restore", "delete"] as const;
+export type ModerationActionType = (typeof MODERATION_ACTIONS)[number];
+export const moderationActionSchema = z.enum(MODERATION_ACTIONS);
+
+export const moderationDecisionSchema = z.object({
+  action: moderationActionSchema,
+  reason: z
+    .string()
+    .trim()
+    .min(2, "reason must be at least 2 characters")
+    .max(1000, "reason may not exceed 1000 characters"),
+});
+export type ModerationDecisionInput = z.infer<typeof moderationDecisionSchema>;
+
+/* ------------------------------------------------------------------ *
+ * M6 Taxonomy Administration Schemas
+ * ------------------------------------------------------------------ */
+
+export const institutionCreateSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "institution name must be at least 2 characters")
+    .max(120, "institution name may not exceed 120 characters"),
+});
+export type InstitutionCreateInput = z.infer<typeof institutionCreateSchema>;
+
+export const subjectCreateSchema = z.object({
+  institutionId: resourceIdSchema,
+  name: z
+    .string()
+    .trim()
+    .min(2, "subject name must be at least 2 characters")
+    .max(120, "subject name may not exceed 120 characters"),
+  code: z
+    .string()
+    .trim()
+    .max(24, "code may not exceed 24 characters")
+    .optional()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+  department: z
+    .string()
+    .trim()
+    .max(120, "department may not exceed 120 characters")
+    .optional()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+  semester: z.number().int().min(1).max(12).optional().nullable(),
+});
+export type SubjectCreateInput = z.infer<typeof subjectCreateSchema>;
+
+export const subjectUpdateSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(2, "subject name must be at least 2 characters")
+    .max(120, "subject name may not exceed 120 characters")
+    .optional(),
+  code: z
+    .string()
+    .trim()
+    .max(24)
+    .optional()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+  department: z
+    .string()
+    .trim()
+    .max(120)
+    .optional()
+    .nullable()
+    .transform((v) => (v === "" ? null : v)),
+  semester: z.number().int().min(1).max(12).optional().nullable(),
+});
+export type SubjectUpdateInput = z.infer<typeof subjectUpdateSchema>;
+
 export const bookmarkRequestSchema = z.object({ resourceId: resourceIdSchema });
 
 export const profileUpdateSchema = z.object({

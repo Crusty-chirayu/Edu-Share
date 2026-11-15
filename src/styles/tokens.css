@@ -1,68 +1,73 @@
 @layer tokens {
   :root {
     /* ------------------------------------------------------------------ *
-     * LIGHT THEME: Sunlit Modern University Library
+     * LIGHT THEME: Modern SaaS Educational Clarity
+     * Reference Palette: White (#FFFFFF) & Vibrant Cobalt (#2E5BFF)
      * ------------------------------------------------------------------ */
-    --c-canvas: hsl(210 25% 97.5%);
+    --c-canvas: #ffffff;
     --c-surface: #ffffff;
     --c-surface-raised: #ffffff;
-    --c-surface-sunken: hsl(214 28% 94%);
-    --c-border: hsl(214 22% 88%);
-    --c-border-strong: hsl(214 18% 76%);
+    --c-surface-sunken: #f7f6f6;
+    --c-surface-alt: #f7f6f6;
+    --c-border: #e0e0df;
+    --c-border-strong: #c8c7c6;
+    --c-border-subtle: #ecebea;
 
-    --c-ink: hsl(222 47% 11%);
-    --c-ink-2: hsl(220 18% 32%);
-    --c-ink-3: hsl(220 12% 44%);
+    --c-ink: #201f20;
+    --c-ink-2: #494949;
+    --c-ink-3: #606060;
 
-    /* Oxford Cobalt & Electric Cerulean */
-    --c-brand: hsl(224 64% 33%);
-    --c-brand-hover: hsl(224 64% 26%);
-    --c-brand-active: hsl(224 64% 20%);
-    --c-brand-tint: hsl(224 90% 96%);
+    /* Primary Modern SaaS Blue (#2E5BFF) */
+    --c-brand: #2e5bff;
+    --c-brand-hover: #1a46f0;
+    --c-brand-active: #0d36db;
+    --c-brand-tint: #eff3ff;
 
-    --c-secondary: hsl(208 100% 40%);
-    --c-secondary-hover: hsl(208 100% 34%);
-    --c-secondary-tint: hsl(208 90% 95%);
+    --c-secondary: #f7f6f6;
+    --c-secondary-hover: #ebeae9;
+    --c-secondary-tint: #f0f0ef;
 
-    /* Academic Amber Node */
-    --c-accent: hsl(38 95% 48%);
-    --c-accent-hover: hsl(38 95% 42%);
-    --c-accent-ink: hsl(30 100% 12%);
-    --c-accent-tint: hsl(38 100% 95%);
+    /* Academic Amber Node (Semantic only: transfer node, badges, ratings) */
+    --c-accent: #d97706;
+    --c-accent-hover: #b45309;
+    --c-accent-ink: #78350f;
+    --c-accent-tint: #fef3c7;
 
     /* Semantics */
-    --c-success: hsl(152 60% 26%);
-    --c-success-tint: hsl(152 50% 94%);
-    --c-warning: hsl(32 90% 30%);
-    --c-warning-tint: hsl(32 80% 94%);
-    --c-danger: hsl(2 70% 42%);
-    --c-danger-hover: hsl(2 70% 35%);
-    --c-danger-tint: hsl(2 80% 95%);
-    --c-info: hsl(208 85% 34%);
-    --c-info-tint: hsl(208 80% 95%);
-    --c-focus: hsl(208 100% 45%);
+    --c-success: #16a34a;
+    --c-success-tint: #dcfce7;
+    --c-warning: #d97706;
+    --c-warning-tint: #fef3c7;
+    --c-danger: #dc2626;
+    --c-danger-hover: #b91c1c;
+    --c-danger-tint: #fee2e2;
+    --c-info: #2e5bff;
+    --c-info-tint: #eff3ff;
+    --c-focus: #2e5bff;
 
     /* Format Categorisation */
-    --c-fmt-pdf: hsl(2 72% 45%);
-    --c-fmt-pdf-bg: hsl(2 80% 96%);
-    --c-fmt-doc: hsl(215 78% 44%);
-    --c-fmt-doc-bg: hsl(215 80% 96%);
-    --c-fmt-slides: hsl(35 90% 42%);
-    --c-fmt-slides-bg: hsl(35 90% 95%);
-    --c-fmt-sheets: hsl(152 65% 28%);
-    --c-fmt-sheets-bg: hsl(152 60% 95%);
-    --c-fmt-archive: hsl(270 45% 40%);
-    --c-fmt-archive-bg: hsl(270 50% 96%);
+    --c-fmt-pdf: #dc2626;
+    --c-fmt-pdf-bg: #fee2e2;
+    --c-fmt-doc: #2563eb;
+    --c-fmt-doc-bg: #dbeafe;
+    --c-fmt-slides: #d97706;
+    --c-fmt-slides-bg: #fef3c7;
+    --c-fmt-sheets: #16a34a;
+    --c-fmt-sheets-bg: #dcfce7;
+    --c-fmt-archive: #7c3aed;
+    --c-fmt-archive-bg: #f5f3ff;
 
     /* Typography */
-    --font-display: var(--font-jakarta, "Plus Jakarta Sans", -apple-system, sans-serif);
-    --font-body: var(--font-inter, "Inter", -apple-system, sans-serif);
-    --font-mono: var(--font-jetbrains, "JetBrains Mono", ui-monospace, monospace);
+    --font-display:
+      var(--font-display-face), "Host Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body:
+      var(--font-body-face), "Host Grotesk", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: var(--font-mono-face), "IBM Plex Mono", ui-monospace, monospace;
 
-    --fs-display: clamp(2.25rem, 3.5vw + 1rem, 3.5rem);
-    --fs-h1: clamp(1.75rem, 2.2vw + 0.8rem, 2.35rem);
-    --fs-h2: clamp(1.3rem, 1.6vw + 0.6rem, 1.75rem);
-    --fs-h3: clamp(1.05rem, 1vw + 0.5rem, 1.25rem);
+    --fs-display: clamp(2.25rem, 3.8vw + 0.5rem, 3.25rem);
+    --fs-h1: clamp(1.75rem, 2.4vw + 0.6rem, 2.25rem);
+    --fs-h2: clamp(1.25rem, 1.5vw + 0.5rem, 1.625rem);
+    --fs-h3: clamp(1.05rem, 0.8vw + 0.5rem, 1.25rem);
     --fs-body: 1rem;
     --fs-body-sm: 0.875rem;
     --fs-meta: 0.775rem;
@@ -83,90 +88,92 @@
     --space-16: 64px;
     --space-20: 80px;
 
-    /* Radii */
+    /* Radii: Pill-shaped controls + Soft flat 8px/12px surfaces */
     --radius-sm: 6px;
-    --radius-md: 10px;
-    --radius-lg: 16px;
-    --radius-xl: 24px;
+    --radius-md: 8px;
+    --radius-card: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
     --radius-pill: 9999px;
 
-    /* Elevation & Shadows (Layered soft shadows) */
-    --shadow-subtle: 0 1px 2px rgba(15, 23, 42, 0.05);
-    --shadow-card: 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
-    --shadow-floating:
-      0 12px 28px -4px rgba(15, 23, 42, 0.1), 0 4px 8px -2px rgba(15, 23, 42, 0.05);
-    --shadow-modal: 0 24px 48px -8px rgba(15, 23, 42, 0.18), 0 8px 16px -4px rgba(15, 23, 42, 0.08);
+    /* Elevation & Shadows: Clean, soft, minimal SaaS shadows */
+    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.03);
+    --shadow-card: 0 2px 8px -1px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    --shadow-floating: 0 8px 24px -4px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+    --shadow-modal: 0 20px 48px -6px rgba(0, 0, 0, 0.14), 0 6px 12px -2px rgba(0, 0, 0, 0.06);
 
     /* Glass tokens */
-    --glass-bg: rgba(255, 255, 255, 0.82);
-    --glass-border: rgba(214, 222, 232, 0.7);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(224, 224, 223, 0.8);
 
     /* Transitions & Motion */
     --dur-instant: 90ms;
     --dur-fast: 150ms;
-    --dur-std: 240ms;
-    --dur-slow: 400ms;
+    --dur-std: 220ms;
+    --dur-slow: 360ms;
     --ease-std: cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   /* ------------------------------------------------------------------ *
-   * DARK THEME: Calibrated High-Contrast Scholarly Atmosphere
+   * DARK THEME: High-Contrast Obsidian SaaS Atmosphere
    * ------------------------------------------------------------------ */
   [data-theme="dark"] {
-    --c-canvas: hsl(224 28% 8%);
-    --c-surface: hsl(224 24% 12%);
-    --c-surface-raised: hsl(224 22% 16%);
-    --c-surface-sunken: hsl(224 30% 6%);
-    --c-border: hsl(224 16% 22%);
-    --c-border-strong: hsl(224 16% 32%);
+    --c-canvas: #141314;
+    --c-surface: #1c1b1d;
+    --c-surface-raised: #242326;
+    --c-surface-sunken: #0d0c0d;
+    --c-surface-alt: #1c1b1d;
+    --c-border: #2e2d30;
+    --c-border-strong: #424145;
+    --c-border-subtle: #242325;
 
-    --c-ink: hsl(220 25% 94%);
-    --c-ink-2: hsl(220 18% 74%);
-    --c-ink-3: hsl(220 12% 58%);
+    --c-ink: #fcfcfd;
+    --c-ink-2: #b0b0b2;
+    --c-ink-3: #828285;
 
-    --c-brand: hsl(215 90% 68%);
-    --c-brand-hover: hsl(215 90% 76%);
-    --c-brand-active: hsl(215 90% 82%);
-    --c-brand-tint: hsl(224 50% 16%);
+    --c-brand: #4a72ff;
+    --c-brand-hover: #6a8dff;
+    --c-brand-active: #8ba8ff;
+    --c-brand-tint: rgba(46, 91, 255, 0.16);
 
-    --c-secondary: hsl(205 95% 65%);
-    --c-secondary-hover: hsl(205 95% 72%);
-    --c-secondary-tint: hsl(205 50% 16%);
+    --c-secondary: #242326;
+    --c-secondary-hover: #2e2d30;
+    --c-secondary-tint: #1c1b1d;
 
-    --c-accent: hsl(38 92% 52%);
-    --c-accent-hover: hsl(38 92% 58%);
-    --c-accent-ink: hsl(30 100% 10%);
-    --c-accent-tint: hsl(38 60% 16%);
+    --c-accent: #fbbf24;
+    --c-accent-hover: #fcd34d;
+    --c-accent-ink: #78350f;
+    --c-accent-tint: rgba(251, 191, 36, 0.16);
 
-    --c-success: hsl(152 60% 48%);
-    --c-success-tint: hsl(152 50% 14%);
-    --c-warning: hsl(34 90% 55%);
-    --c-warning-tint: hsl(34 70% 15%);
-    --c-danger: hsl(2 85% 64%);
-    --c-danger-hover: hsl(2 85% 70%);
-    --c-danger-tint: hsl(2 60% 16%);
-    --c-info: hsl(205 90% 65%);
-    --c-info-tint: hsl(205 60% 16%);
-    --c-focus: hsl(208 100% 60%);
+    --c-success: #22c55e;
+    --c-success-tint: rgba(34, 197, 94, 0.16);
+    --c-warning: #f59e0b;
+    --c-warning-tint: rgba(245, 158, 11, 0.16);
+    --c-danger: #ef4444;
+    --c-danger-hover: #f87171;
+    --c-danger-tint: rgba(239, 68, 68, 0.16);
+    --c-info: #4a72ff;
+    --c-info-tint: rgba(74, 114, 255, 0.16);
+    --c-focus: #4a72ff;
 
-    --c-fmt-pdf: hsl(2 85% 68%);
-    --c-fmt-pdf-bg: hsl(2 40% 16%);
-    --c-fmt-doc: hsl(212 90% 70%);
-    --c-fmt-doc-bg: hsl(212 40% 16%);
-    --c-fmt-slides: hsl(38 92% 62%);
-    --c-fmt-slides-bg: hsl(38 40% 16%);
-    --c-fmt-sheets: hsl(152 65% 58%);
-    --c-fmt-sheets-bg: hsl(152 40% 15%);
-    --c-fmt-archive: hsl(270 65% 72%);
-    --c-fmt-archive-bg: hsl(270 40% 17%);
+    --c-fmt-pdf: #f87171;
+    --c-fmt-pdf-bg: rgba(239, 68, 68, 0.15);
+    --c-fmt-doc: #60a5fa;
+    --c-fmt-doc-bg: rgba(59, 130, 246, 0.15);
+    --c-fmt-slides: #fbbf24;
+    --c-fmt-slides-bg: rgba(251, 191, 36, 0.15);
+    --c-fmt-sheets: #4ade80;
+    --c-fmt-sheets-bg: rgba(74, 222, 128, 0.15);
+    --c-fmt-archive: #a78bfa;
+    --c-fmt-archive-bg: rgba(167, 139, 250, 0.15);
 
-    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.4);
-    --shadow-card: 0 4px 16px -2px rgba(0, 0, 0, 0.45), 0 0 0 1px hsl(224 16% 22%);
-    --shadow-floating: 0 12px 32px -4px rgba(0, 0, 0, 0.55), 0 0 0 1px hsl(224 16% 26%);
-    --shadow-modal: 0 24px 60px -8px rgba(0, 0, 0, 0.75), 0 0 0 1px hsl(224 18% 30%);
+    --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 2px 10px -1px rgba(0, 0, 0, 0.5), 0 0 0 1px #2e2d30;
+    --shadow-floating: 0 10px 28px -4px rgba(0, 0, 0, 0.65), 0 0 0 1px #38373b;
+    --shadow-modal: 0 24px 56px -6px rgba(0, 0, 0, 0.8), 0 0 0 1px #424145;
 
-    --glass-bg: rgba(23, 28, 38, 0.85);
-    --glass-border: rgba(45, 55, 72, 0.7);
+    --glass-bg: rgba(28, 27, 29, 0.88);
+    --glass-border: rgba(46, 45, 48, 0.8);
   }
 
   @media (prefers-reduced-motion: reduce) {

@@ -36,18 +36,25 @@ export default async function UploadPage() {
             <h2 style={{ fontSize: "var(--fs-h3)", marginBottom: "var(--space-3)" }}>
               Upload checklist
             </h2>
-            <div className="stack stack--tight" style={{ fontSize: "var(--fs-body-sm)", color: "var(--c-ink-2)" }}>
+            <div
+              className="stack stack--tight"
+              style={{ fontSize: "var(--fs-body-sm)", color: "var(--c-ink-2)" }}
+            >
               <p>
-                <strong>Format &amp; size:</strong> PDF, DOCX, PPTX, XLSX, TXT, MD, CSV, PNG, JPG, or ZIP up to 25&nbsp;MB.
+                <strong>Format &amp; size:</strong> PDF, DOCX, PPTX, XLSX, TXT, MD, CSV, PNG, JPG,
+                or ZIP up to 25&nbsp;MB.
               </p>
               <p>
-                <strong>Content verification:</strong> The server checks real file headers (magic bytes), not just file extensions.
+                <strong>Content verification:</strong> The server checks real file headers (magic
+                bytes), not just file extensions.
               </p>
               <p>
-                <strong>Visibility options:</strong> Public materials appear in library search. Private materials are visible only to you under My Uploads.
+                <strong>Visibility options:</strong> Public materials appear in library search.
+                Private materials are visible only to you under My Uploads.
               </p>
               <p>
-                <strong>Academic integrity:</strong> Share only materials you authored or have permission to distribute.
+                <strong>Academic integrity:</strong> Share only materials you authored or have
+                permission to distribute.
               </p>
             </div>
           </div>

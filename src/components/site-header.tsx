@@ -80,6 +80,12 @@ export async function SiteHeader() {
                   </span>
                 ) : null}
 
+                {session.role === "admin" ? (
+                  <Link href="/admin/moderation" className="btn btn--secondary btn--sm">
+                    Admin
+                  </Link>
+                ) : null}
+
                 <Link href="/profile" className="btn btn--ghost btn--sm">
                   Profile
                 </Link>

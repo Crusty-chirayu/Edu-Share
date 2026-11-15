@@ -8,6 +8,14 @@ import {
   buildResourceInsertQuery,
   buildResourceListQuery,
   buildResourceUpdateQuery,
+  buildAdminResourceDeleteQuery,
+  buildListReportsQuery,
+  buildReportResolveQuery,
+  buildModerationActionInsertQuery,
+  buildResourceVisibilitySetQuery,
+  buildInstitutionInsertQuery,
+  buildSubjectInsertQuery,
+  buildSubjectDeleteQuery,
   orderByFragment,
 } from "@/lib/sql";
 import { parseOrThrow, searchParamsSchema } from "@/lib/validation";
@@ -187,5 +195,80 @@ describe("buildBookmarkVisibilityQuery", () => {
     const query = buildBookmarkVisibilityQuery(RESOURCE, OWNER);
     expect(query.text).toContain("r.visibility = 'public' OR r.owner_id = $2::uuid");
     expect(query.values).toEqual([RESOURCE, OWNER]);
+  });
+});
+
+describe("moderation queries (M9)", () => {
+  it("binds filter parameters and limits in buildListReportsQuery", () => {
+    const { list, count } = buildListReportsQuery(
+      { status: "open", category: "spam" },
+      { limit: 25, offset: 0 },
+    );
+    expect(list.text).not.toContain("'open'");
+    expect(list.text).not.toContain("'spam'");
+    expect(list.values).toContain("open");
+    expect(list.values).toContain("spam");
+    expect(list.values).toContain(25);
+    expect(count.values).toEqual(["open", "spam"]);
+  });
+
+  it("binds report resolve values safely", () => {
+    const query = buildReportResolveQuery("rep-123", OWNER, "resolved", "Content removed");
+    expect(query.text).toContain("resolved_by = $3::uuid");
+    expect(query.text).toContain("WHERE id = $4::uuid");
+    expect(query.values).toEqual(["resolved", "Content removed", OWNER, "rep-123"]);
+  });
+
+  it("binds moderation action audit entries", () => {
+    const query = buildModerationActionInsertQuery(
+      OWNER,
+      RESOURCE,
+      "rep-123",
+      "hide",
+      "Violates academic integrity policy",
+    );
+    expect(query.text).toContain("INSERT INTO moderation_actions");
+    expect(query.values).toContain(OWNER);
+    expect(query.values).toContain(RESOURCE);
+    expect(query.values).toContain("hide");
+  });
+
+  it("binds resource visibility toggle", () => {
+    const query = buildResourceVisibilitySetQuery(RESOURCE, "private");
+    expect(query.text).toContain("visibility = $1::text");
+    expect(query.values).toEqual(["private", RESOURCE]);
+  });
+
+  it("binds admin resource delete query without owner check", () => {
+    const query = buildAdminResourceDeleteQuery(RESOURCE);
+    expect(query.text).not.toContain("owner_id");
+    expect(query.text).toContain("WHERE id = $1::uuid");
+    expect(query.values).toEqual([RESOURCE]);
+  });
+});
+
+describe("taxonomy queries (M6)", () => {
+  it("binds institution insert", () => {
+    const query = buildInstitutionInsertQuery("Stanford University");
+    expect(query.text).toContain("INSERT INTO institutions");
+    expect(query.values).toEqual(["Stanford University"]);
+  });
+
+  it("binds subject insert with all parameters", () => {
+    const query = buildSubjectInsertQuery({
+      institutionId: OWNER,
+      name: "Distributed Systems",
+      code: "CS244B",
+      department: "Computer Science",
+      semester: 4,
+    });
+    expect(query.text).toContain("INSERT INTO subjects");
+    expect(query.values).toEqual([OWNER, "Distributed Systems", "CS244B", "Computer Science", 4]);
+  });
+
+  it("builds safe delete query preventing deletion when resources exist", () => {
+    const query = buildSubjectDeleteQuery(SUBJECT);
+    expect(query.text).toContain("NOT EXISTS (SELECT 1 FROM resources");
+    expect(query.values).toEqual([SUBJECT, SUBJECT]);
   });
 });

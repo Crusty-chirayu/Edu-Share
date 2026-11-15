@@ -31,6 +31,13 @@ export async function guarded<T>(fn: () => Promise<T>): Promise<T> {
     return await fn();
   } catch (error) {
     if (error instanceof AppError) throw error;
+    const code = (error as { code?: string })?.code;
+    if (code === "23505") {
+      throw AppError.conflict("An item with this value already exists.");
+    }
+    if (code === "23503") {
+      throw AppError.conflict("Referenced item does not exist or has active dependencies.");
+    }
     throw AppError.database();
   }
 }
@@ -61,6 +68,13 @@ export async function withIdentity<T>(
     return result as T;
   } catch (error) {
     if (error instanceof AppError) throw error;
+    const code = (error as { code?: string })?.code;
+    if (code === "23505") {
+      throw AppError.conflict("An item with this value already exists.");
+    }
+    if (code === "23503") {
+      throw AppError.conflict("Referenced item does not exist or has active dependencies.");
+    }
     throw AppError.database();
   }
 }

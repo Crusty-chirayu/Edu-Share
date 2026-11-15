@@ -425,4 +425,94 @@ DROP POLICY IF EXISTS resource_reports_insert_own ON resource_reports;
 DROP TABLE IF EXISTS resource_reports;
 `.trim(),
   },
+  {
+    version: "0008",
+    name: "moderation_and_governance",
+    up: `
+ALTER TABLE resource_reports ADD COLUMN IF NOT EXISTS resolution_note TEXT
+  CHECK (resolution_note IS NULL OR char_length(resolution_note) <= 1000);
+ALTER TABLE resource_reports ADD COLUMN IF NOT EXISTS resolved_at TIMESTAMPTZ;
+ALTER TABLE resource_reports ADD COLUMN IF NOT EXISTS resolved_by UUID REFERENCES profiles (id) ON DELETE SET NULL;
+
+CREATE TABLE IF NOT EXISTS moderation_actions (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  report_id UUID REFERENCES resource_reports (id) ON DELETE SET NULL,
+  resource_id UUID REFERENCES resources (id) ON DELETE SET NULL,
+  moderator_id UUID NOT NULL REFERENCES profiles (id) ON DELETE CASCADE,
+  action TEXT NOT NULL CHECK (action IN ('dismiss', 'hide', 'restore', 'delete')),
+  reason TEXT NOT NULL CHECK (char_length(reason) BETWEEN 2 AND 1000),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+COMMENT ON TABLE moderation_actions IS 'Audit log of actions taken by administrators and moderators.';
+
+CREATE INDEX IF NOT EXISTS moderation_actions_resource_idx ON moderation_actions (resource_id);
+CREATE INDEX IF NOT EXISTS moderation_actions_moderator_idx ON moderation_actions (moderator_id);
+CREATE INDEX IF NOT EXISTS moderation_actions_created_idx ON moderation_actions (created_at DESC);
+
+ALTER TABLE moderation_actions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS moderation_actions_admin ON moderation_actions;
+CREATE POLICY moderation_actions_admin ON moderation_actions FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'));
+
+DROP POLICY IF EXISTS resource_reports_admin_all ON resource_reports;
+CREATE POLICY resource_reports_admin_all ON resource_reports FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'));
+
+DROP POLICY IF EXISTS resources_update_own ON resources;
+CREATE POLICY resources_update_own ON resources FOR UPDATE
+  USING (
+    owner_id = public.app_current_user_id()
+    OR EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin')
+  )
+  WITH CHECK (
+    owner_id = public.app_current_user_id()
+    OR EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin')
+  );
+
+DROP POLICY IF EXISTS institutions_admin_write ON institutions;
+CREATE POLICY institutions_admin_write ON institutions FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'));
+
+DROP POLICY IF EXISTS subjects_admin_write ON subjects;
+CREATE POLICY subjects_admin_write ON subjects FOR ALL
+  USING (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'))
+  WITH CHECK (EXISTS (SELECT 1 FROM profiles p WHERE p.id = public.app_current_user_id() AND p.role = 'admin'));
+
+DO $$
+DECLARE
+  role_name text;
+BEGIN
+  FOREACH role_name IN ARRAY ARRAY['authenticated'] LOOP
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = role_name) THEN
+      EXECUTE format('GRANT SELECT, INSERT ON TABLE public.moderation_actions TO %I', role_name);
+      EXECUTE format('GRANT UPDATE ON TABLE public.resource_reports TO %I', role_name);
+      EXECUTE format('GRANT INSERT, UPDATE, DELETE ON TABLE public.institutions TO %I', role_name);
+      EXECUTE format('GRANT INSERT, UPDATE, DELETE ON TABLE public.subjects TO %I', role_name);
+    END IF;
+  END LOOP;
+END
+$$;
+`.trim(),
+    down: `
+DROP POLICY IF EXISTS subjects_admin_write ON subjects;
+DROP POLICY IF EXISTS institutions_admin_write ON institutions;
+DROP POLICY IF EXISTS resource_reports_admin_all ON resource_reports;
+DROP POLICY IF EXISTS moderation_actions_admin ON moderation_actions;
+
+DROP POLICY IF EXISTS resources_update_own ON resources;
+CREATE POLICY resources_update_own ON resources FOR UPDATE
+  USING (owner_id = public.app_current_user_id())
+  WITH CHECK (owner_id = public.app_current_user_id());
+
+DROP TABLE IF EXISTS moderation_actions;
+
+ALTER TABLE resource_reports DROP COLUMN IF EXISTS resolved_by;
+ALTER TABLE resource_reports DROP COLUMN IF EXISTS resolved_at;
+ALTER TABLE resource_reports DROP COLUMN IF EXISTS resolution_note;
+`.trim(),
+  },
 ];

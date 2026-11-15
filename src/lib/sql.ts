@@ -291,6 +291,16 @@ export function buildResourceDeleteQuery(id: string, ownerId: string): BuiltQuer
   };
 }
 
+/** Admin delete query. Does not scope to owner_id. */
+export function buildAdminResourceDeleteQuery(id: string): BuiltQuery {
+  return {
+    text: `DELETE FROM resources
+    WHERE id = $1::uuid
+    RETURNING id, file_key`,
+    values: [id],
+  };
+}
+
 /* ------------------------------------------------------------------ *
  * Bookmarks
  * ------------------------------------------------------------------ */
@@ -468,6 +478,225 @@ export function buildReportInsertQuery(
     ON CONFLICT (reporter_id, resource_id) DO UPDATE
       SET category = EXCLUDED.category, details = EXCLUDED.details
     RETURNING id, resource_id, reporter_id, category, details, status, created_at`,
+    values,
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * M9 Moderation & Governance Queries
+ * ------------------------------------------------------------------ */
+
+export interface ReportListItem {
+  id: string;
+  resourceId: string;
+  resourceTitle: string;
+  resourceVisibility: "public" | "private";
+  fileName: string | null;
+  reporterId: string;
+  reporterName: string;
+  category: string;
+  details: string | null;
+  status: "open" | "reviewed" | "resolved" | "dismissed";
+  resolutionNote: string | null;
+  resolvedAt: Date | null;
+  createdAt: Date;
+}
+
+export function buildListReportsQuery(
+  filter: { status?: string | undefined; category?: string | undefined } = {},
+  pagination: { limit: number; offset: number } = { limit: 50, offset: 0 },
+): { list: BuiltQuery; count: BuiltQuery } {
+  const { values, bind } = binder();
+  const whereClauses: string[] = [];
+
+  if (filter.status) {
+    whereClauses.push(`rep.status = ${bind(filter.status)}::text`);
+  }
+  if (filter.category) {
+    whereClauses.push(`rep.category = ${bind(filter.category)}::text`);
+  }
+
+  const whereText = whereClauses.length > 0 ? `WHERE ${whereClauses.join(" AND ")}` : "";
+  const countValues = [...values];
+  const countText = `SELECT count(*)::text AS total FROM resource_reports rep ${whereText}`;
+
+  const limitParam = bind(pagination.limit);
+  const offsetParam = bind(pagination.offset);
+
+  const listText = `SELECT rep.id, rep.resource_id, rep.reporter_id, rep.category, rep.details,
+    rep.status, rep.resolution_note, rep.resolved_at, rep.created_at,
+    r.title AS resource_title, r.visibility AS resource_visibility, r.file_name,
+    p.display_name AS reporter_name
+  FROM resource_reports rep
+  JOIN resources r ON r.id = rep.resource_id
+  JOIN profiles p ON p.id = rep.reporter_id
+  ${whereText}
+  ORDER BY rep.created_at DESC
+  LIMIT ${limitParam} OFFSET ${offsetParam}`;
+
+  return {
+    list: { text: listText, values },
+    count: { text: countText, values: countValues },
+  };
+}
+
+export function buildReportResolveQuery(
+  reportId: string,
+  moderatorId: string,
+  status: string,
+  resolutionNote?: string,
+): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `UPDATE resource_reports
+    SET status = ${bind(status)}::text,
+        resolution_note = ${bind(resolutionNote ?? null)}::text,
+        resolved_at = now(),
+        resolved_by = ${bind(moderatorId)}::uuid
+    WHERE id = ${bind(reportId)}::uuid
+    RETURNING id, resource_id, reporter_id, category, status, resolution_note, resolved_at`,
+    values,
+  };
+}
+
+export function buildModerationActionInsertQuery(
+  moderatorId: string,
+  resourceId: string,
+  reportId: string | null,
+  action: string,
+  reason: string,
+): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `INSERT INTO moderation_actions (moderator_id, resource_id, report_id, action, reason)
+    VALUES (${bind(moderatorId)}::uuid, ${bind(resourceId)}::uuid, ${bind(reportId)}::uuid, ${bind(action)}::text, ${bind(reason)}::text)
+    RETURNING id, moderator_id, resource_id, report_id, action, reason, created_at`,
+    values,
+  };
+}
+
+export function buildResourceVisibilitySetQuery(
+  resourceId: string,
+  visibility: "public" | "private",
+): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `UPDATE resources
+    SET visibility = ${bind(visibility)}::text, updated_at = now()
+    WHERE id = ${bind(resourceId)}::uuid
+    RETURNING id, title, visibility, updated_at`,
+    values,
+  };
+}
+
+export interface ModerationActionRow {
+  id: string;
+  resourceId: string;
+  reportId: string | null;
+  action: string;
+  reason: string;
+  createdAt: Date;
+  moderatorName: string;
+  resourceTitle: string;
+}
+
+export function buildListModerationActionsQuery(
+  resourceId?: string,
+  limit: number = 50,
+): BuiltQuery {
+  const { values, bind } = binder();
+  const where = resourceId ? `WHERE ma.resource_id = ${bind(resourceId)}::uuid` : "";
+  return {
+    text: `SELECT ma.id, ma.resource_id, ma.report_id, ma.action, ma.reason, ma.created_at,
+      p.display_name AS moderator_name, r.title AS resource_title
+    FROM moderation_actions ma
+    JOIN profiles p ON p.id = ma.moderator_id
+    JOIN resources r ON r.id = ma.resource_id
+    ${where}
+    ORDER BY ma.created_at DESC
+    LIMIT ${bind(limit)}`,
+    values,
+  };
+}
+
+/* ------------------------------------------------------------------ *
+ * M6 Taxonomy Administration Queries
+ * ------------------------------------------------------------------ */
+
+export function buildInstitutionInsertQuery(name: string): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `INSERT INTO institutions (name)
+    VALUES (${bind(name)}::text)
+    RETURNING id, name, created_at`,
+    values,
+  };
+}
+
+export function buildInstitutionUpdateQuery(id: string, name: string): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `UPDATE institutions
+    SET name = ${bind(name)}::text
+    WHERE id = ${bind(id)}::uuid
+    RETURNING id, name`,
+    values,
+  };
+}
+
+export function buildSubjectInsertQuery(input: {
+  institutionId: string;
+  name: string;
+  code?: string | null | undefined;
+  department?: string | null | undefined;
+  semester?: number | null | undefined;
+}): BuiltQuery {
+  const { values, bind } = binder();
+  return {
+    text: `INSERT INTO subjects (institution_id, name, code, department, semester)
+    VALUES (${bind(input.institutionId)}::uuid, ${bind(input.name)}::text, ${bind(input.code ?? null)}::text, ${bind(input.department ?? null)}::text, ${bind(input.semester ?? null)}::smallint)
+    RETURNING id, institution_id, name, code, department, semester, created_at`,
+    values,
+  };
+}
+
+export function buildSubjectUpdateQuery(
+  id: string,
+  input: {
+    name?: string | undefined;
+    code?: string | null | undefined;
+    department?: string | null | undefined;
+    semester?: number | null | undefined;
+  },
+): BuiltQuery {
+  const { values, bind } = binder();
+  const assignments: string[] = [];
+  if (input.name !== undefined) assignments.push(`name = ${bind(input.name)}::text`);
+  if (input.code !== undefined) assignments.push(`code = ${bind(input.code)}::text`);
+  if (input.department !== undefined)
+    assignments.push(`department = ${bind(input.department)}::text`);
+  if (input.semester !== undefined)
+    assignments.push(`semester = ${bind(input.semester)}::smallint`);
+  if (assignments.length === 0) {
+    throw AppError.invalid({ form: "provide at least one field to update" });
+  }
+  return {
+    text: `UPDATE subjects SET ${assignments.join(", ")}
+    WHERE id = ${bind(id)}::uuid
+    RETURNING id, institution_id, name, code, department, semester`,
+    values,
+  };
+}
+
+export function buildSubjectDeleteQuery(id: string): BuiltQuery {
+  const { values, bind } = binder();
+  const idBind1 = bind(id);
+  const idBind2 = bind(id);
+  return {
+    text: `DELETE FROM subjects
+    WHERE id = ${idBind1}::uuid
+      AND NOT EXISTS (SELECT 1 FROM resources r WHERE r.subject_id = ${idBind2}::uuid)
+    RETURNING id, name`,
     values,
   };
 }

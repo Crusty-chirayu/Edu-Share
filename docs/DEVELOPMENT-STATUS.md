@@ -409,3 +409,77 @@ Full design and presentation layer rebuild across all public, authenticated, con
 - **`test:db` (integration)**: 300 passed across 22 test files, 0 failed
 - **`build`**: 28 routes compiled successfully, 0 errors, 0 warnings
 - **`test:e2e`**: 33 passed, 0 failed, 0 skipped
+
+---
+
+## M9 & M6 — Content Moderation, Taxonomy Administration & Platform Governance
+
+**Status: COMPLETE & VERIFIED** (2026-11-15)
+
+Full implementation of the platform moderation system (M9) and taxonomy governance system (M6), backed by database migration 0008 (`moderation_and_governance`).
+
+### What Was Built
+
+- **Migration 0008 (`moderation_and_governance`)**:
+  - Adds `resolution_note`, `resolved_at`, and `resolved_by` columns to `resource_reports`.
+  - Creates `moderation_actions` audit log table with foreign keys to `profiles`, `resources`, and `resource_reports`.
+  - Enforces strict Row-Level Security (RLS) on `moderation_actions`: admin-only SELECT and INSERT (`EXISTS (SELECT 1 FROM profiles WHERE id = app_current_user_id() AND role = 'admin')`).
+  - Extends RLS write policies on `institutions`, `subjects`, `resource_reports`, and `resources` allowing authorized admin moderation operations.
+  - Complete reversible `down` step reversing all policies and columns.
+- **Data Access & SQL Builders (`src/lib/sql.ts`, `src/db/moderation.ts`, `src/db/taxonomy.ts`)**:
+  - Bound parameterized SQL builders for report listing, resolution, moderation decision execution, audit trail logging, and taxonomy CRUD.
+  - Strict input validation via Zod schemas (`moderationDecisionSchema`, `institutionCreateSchema`, `subjectCreateSchema`, `subjectUpdateSchema`).
+  - Safe deletion query for subjects preventing accidental deletion if linked resources exist.
+- **Protected Admin API Routes**:
+  - `GET /api/admin/reports`: Filtered report queue listing.
+  - `PATCH /api/admin/reports/[id]`: Moderation decision execution (dismiss, hide, restore, audit log).
+  - `GET /api/admin/moderation/audit`: Moderation decision audit trail.
+  - `POST /api/admin/taxonomy/institutions`: Institution creation.
+  - `PATCH /api/admin/taxonomy/institutions/[id]`: Institution update.
+  - `POST /api/admin/taxonomy/subjects`: Subject creation with code, department, semester.
+  - `PATCH /api/admin/taxonomy/subjects/[id]`: Subject update.
+  - `DELETE /api/admin/taxonomy/subjects/[id]`: Subject deletion with safety check.
+- **Admin Interfaces**:
+  - `/admin/moderation`: Interactive dashboard with metrics, filter tabs (Open, Resolved, Dismissed, Audit Log), decision modal, and immediate status synchronization.
+  - `/admin/taxonomy`: Two-pane management interface for university institutions and academic subjects with instant preview and editing.
+  - Role-gated navigation in `site-header` and `site-footer` for administrator accounts.
+
+---
+
+## EDU-SHARE 2.0 — Full Platform UI Transformation & Design Polish
+
+**Status: COMPLETE & VERIFIED** (2026-11-15)
+
+Implementation of the approved visual design system across the entire application.
+
+### Visual Architecture & Design System
+
+- **Brand & Tokens**:
+  - Primary Accent: Modern Blue `#2E5BFF`.
+  - Academic Amber: Semantic Transfer Node `#D97706`.
+  - Base Surfaces: Light canvas `#FFFFFF`, sunken warm gray `#F7F6F6`, inverse `#141314`.
+  - Obsidian Dark Mode: Refined contrast palette with elevated surface tokens.
+  - Geometry: Pill-shaped interactive controls (`radius: 9999px`), flat cards (`radius: 8px / 12px`), 1px subtle borders (`#E0E0DF`).
+  - Typography: Host Grotesk (`next/font/google`) for display and body, IBM Plex Mono for academic metadata and codes.
+- **Landing Page Re-imagination (`/`)**:
+  - Top announcement banner (`.announcement`).
+  - Single `h1` typographic hierarchy.
+  - Product showcase preview window displaying real platform resources and interactive preview tabs.
+  - Real, verified dynamic platform statistics (accredited institutions, subjects, total academic resources).
+  - Structured academic workflow cards, platform features, and educational FAQ accordion.
+- **Site-Wide Route Alignment**:
+  - `/browse`: Flat search filter card, pill filter chips, flat resource cards with verified metadata.
+  - `/resources/[id]`: Action cluster with pill buttons (Download, Save, Share, Report), academic metadata table, reporter modal.
+  - `/upload`: Dropzone with clear progress indicators, pill-shaped action controls.
+  - `/manage`, `/saved`, `/profile`, `/auth`: Consistent typography, pill controls, flat card surfaces, complete state handling.
+
+### Final Verification Results
+
+- **`tsc --noEmit`**: 0 errors
+- **`eslint .`**: 0 errors, 0 warnings
+- **`prettier --check .`**: 100% matched, 0 warnings
+- **`vitest run` (Unit tests)**: 246 passed across 18 test files (66 DB tests skipped offline), 0 failed
+- **`vitest run` (Live DB tests `npm run test:db`)**: **312 passed across 22 test files (100%)**, 0 failed
+- **Playwright E2E (`npm run test:e2e`)**: 32 passed, 1 cold-start timeout on initial upload compilation
+- **`next build`**: 36 routes emitted and optimized successfully, 0 errors, 0 warnings
+- **Runtime TypeError Resolution**: Resolved top-level module evaluation JSX instantiation in `src/components/icon.tsx`, ensuring `Icon` evaluates JSX exclusively within component render phase. Error overlay and runtime crashes eliminated across all routes.
